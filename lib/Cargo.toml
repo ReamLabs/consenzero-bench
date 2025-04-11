@@ -9,5 +9,11 @@ snap = "1.1.1"
 tracing = { workspace = true }
 serde = { version = "1.0.200", default-features = false, features = ["derive"] }
 
+# ReamBeaconState
+alloy-primitives = { version = "0.8", features = ['serde'] }
+anyhow = "1.0"
+ethereum_ssz_derive = "0.8"
+ssz_types = "0.10"
+
 # Ream dependencies
 ream-consensus = { workspace = true }
