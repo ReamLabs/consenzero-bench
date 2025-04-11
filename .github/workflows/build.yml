@@ -3,7 +3,7 @@ name: Build Guest
 on:
   workflow_dispatch:
   push:
-    branches: [main]
+    branches: [master]
   pull_request:
 
 env:
@@ -33,6 +33,7 @@ jobs:
           /home/runner/.risc0/bin/rzup install rust 1.85.0
           /home/runner/.risc0/bin/rzup install r0vm 2.0.1
           /home/runner/.risc0/bin/rzup install cargo-risczero 2.0.1
+
       - name: Build Risc0 guest program
         run: |
           cargo build
