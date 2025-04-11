@@ -14,7 +14,7 @@ RUST_BACKTRACE = 0
 
 .PHONY: all download run clean $(addprefix run-, $(OPERATIONS))
 
-all: download run-attestation
+all: download run-attestation run-attester_slashing run-block_header run-bls_to_execution_change run-deposit run-execution_payload run-proposer_slashing run-sync_aggregate run-voluntary_exit run-withdrawals
 
 download:
 	@echo "Running download script..."
