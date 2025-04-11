@@ -2,10 +2,11 @@ use alloy_primitives::B256;
 use serde::{Deserialize, Serialize};
 use ssz_derive::{Decode, Encode};
 use ssz_types::{
-    typenum::{U16777216, U2048, U4, U65536, U8192},
+    typenum::{U536870912, U16777216, U2048, U4, U65536, U8192},
     BitVector, FixedVector, VariableList,
 };
 use std::sync::Arc;
+use tree_hash_derive::TreeHash;
 
 use ream_consensus::{
     attestation::Attestation,
@@ -24,10 +25,11 @@ use ream_consensus::{
     proposer_slashing::ProposerSlashing,
     sync_aggregate::SyncAggregate,
     sync_committee::SyncCommittee,
+    validator::Validator,
     voluntary_exit::SignedVoluntaryExit,
 };
 
-#[derive(Debug, PartialEq, Clone, Serialize, Deserialize, Encode, Decode)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize, Encode, Decode, TreeHash)]
 pub struct BeaconState {
     // Versioning
     pub genesis_time: u64,
@@ -47,9 +49,11 @@ pub struct BeaconState {
     pub eth1_data_votes: VariableList<Eth1Data, U2048>,
     pub eth1_deposit_index: u64,
 
-    // // Registry
-    // pub validators: VariableList<Validator, U1099511627776>,
-    // pub balances: VariableList<u64, U1099511627776>,
+    // Registry
+    // Using U536870912 (2^29) because risc0 guest fails for U4294967296 (2^32) and above,
+    // and U2147483648 (2^31) and U1073741824 (2^30) fails to merkleize
+    pub validators: VariableList<Validator, U536870912>,
+    pub balances: VariableList<u64, U536870912>,
 
     // Randomness
     pub randao_mixes: FixedVector<B256, U65536>,
@@ -58,8 +62,8 @@ pub struct BeaconState {
     pub slashings: FixedVector<u64, U8192>,
 
     // // Participation
-    // pub previous_epoch_participation: VariableList<u8, U1099511627776>,
-    // pub current_epoch_participation: VariableList<u8, U1099511627776>,
+    pub previous_epoch_participation: VariableList<u8, U536870912>,
+    pub current_epoch_participation: VariableList<u8, U536870912>,
 
     // Finality
     pub justification_bits: BitVector<U4>,
@@ -68,7 +72,7 @@ pub struct BeaconState {
     pub finalized_checkpoint: Checkpoint,
 
     // // Inactivity
-    // pub inactivity_scores: VariableList<u64, U1099511627776>,
+    pub inactivity_scores: VariableList<u64, U536870912>,
 
     // Sync
     pub current_sync_committee: Arc<SyncCommittee>,
@@ -156,9 +160,9 @@ impl From<ReamBeaconState> for BeaconState {
             eth1_data_votes: state.eth1_data_votes,
             eth1_deposit_index: state.eth1_deposit_index,
 
-            // // Registry
-            // validators: state.validators,
-            // balances: state.balances,
+            // Registry
+            validators: VariableList::<Validator, U536870912>::new(state.validators.to_vec()).unwrap(),
+            balances: VariableList::<u64, U536870912>::new(state.balances.to_vec()).unwrap(),
 
             // Randomness
             randao_mixes: state.randao_mixes,
@@ -167,8 +171,8 @@ impl From<ReamBeaconState> for BeaconState {
             slashings: state.slashings,
 
             // // Participation
-            // previous_epoch_participation: state.previous_epoch_participation,
-            // current_epoch_participation: state.current_epoch_participation,
+            previous_epoch_participation: VariableList::<u8, U536870912>::new(state.previous_epoch_participation.to_vec()).unwrap(),
+            current_epoch_participation: VariableList::<u8, U536870912>::new(state.current_epoch_participation.to_vec()).unwrap(),
 
             // Finality
             justification_bits: state.justification_bits,
@@ -177,7 +181,7 @@ impl From<ReamBeaconState> for BeaconState {
             finalized_checkpoint: state.finalized_checkpoint,
 
             // // Inactivity
-            // inactivity_scores: state.inactivity_scores,
+            inactivity_scores: VariableList::<u64, U536870912>::new(state.inactivity_scores.to_vec()).unwrap(),
 
             // Sync
             current_sync_committee: state.current_sync_committee,

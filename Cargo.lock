@@ -2756,6 +2756,8 @@ dependencies = [
  "snap",
  "ssz_types",
  "tracing",
+ "tree_hash",
+ "tree_hash_derive",
 ]
 
 [[package]]

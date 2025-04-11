@@ -1,4 +1,5 @@
 use risc0_zkvm::guest::env;
+use tree_hash::TreeHash;
 
 use ream_lib::{
     beacon_state::BeaconState,
@@ -23,37 +24,46 @@ fn main() {
 
     match input {
         OperationInput::Attestation(attestation) => {
-            let _ = pre_state.process_attestation(&attestation);
+            let _ = pre_state.clone().process_attestation(&attestation);
         }
         OperationInput::AttesterSlashing(attester_slashing) => {
-            let _ = pre_state.process_attester_slashing(&attester_slashing);
+            let _ = pre_state.clone().process_attester_slashing(&attester_slashing);
         }
         OperationInput::BeaconBlock(block) => {
-            let _ = pre_state.process_block_header(&block);
+            let _ = pre_state.clone().process_block_header(&block);
         }
         OperationInput::SignedBLSToExecutionChange(bls_change) => {
-            let _ = pre_state.process_bls_to_execution_change(&bls_change);
+            let _ = pre_state.clone().process_bls_to_execution_change(&bls_change);
         }
         OperationInput::Deposit(deposit) => {
-            let _ = pre_state.process_deposit(&deposit);
+            let _ = pre_state.clone().process_deposit(&deposit);
         }
         OperationInput::BeaconBlockBody(_block_body) => {
             panic!("Not implemented");
-            // let _ = pre_state.process_execution_payload(&block_body);
+            // let _ = pre_state.clone().process_execution_payload(&block_body);
         }
         OperationInput::ProposerSlashing(proposer_slashing) => {
-            let _ = pre_state.process_proposer_slashing(&proposer_slashing);
+            let _ = pre_state.clone().process_proposer_slashing(&proposer_slashing);
         }
         OperationInput::SyncAggregate(sync_aggregate) => {
-            let _ = pre_state.process_sync_aggregate(&sync_aggregate);
+            let _ = pre_state.clone().process_sync_aggregate(&sync_aggregate);
         }
         OperationInput::SignedVoluntaryExit(voluntary_exit) => {
-            let _ = pre_state.process_voluntary_exit(&voluntary_exit);
+            let _ = pre_state.clone().process_voluntary_exit(&voluntary_exit);
         }
         OperationInput::ExecutionPayload(execution_payload) => {
-            let _ = pre_state.process_withdrawals(&execution_payload);
+            let _ = pre_state.clone().process_withdrawals(&execution_payload);
         }
     }
 
     eprintln!("{}:{}: {}", "process-operation", "end", env::cycle_count());
+
+    // Merkleize the processed state
+    eprintln!("{}:{}: {}", "merkleize-operation", "start", env::cycle_count());
+    let state_root = pre_state.tree_hash_root();
+    eprintln!("{}:{}: {}", "merkleize-operation", "end", env::cycle_count());
+
+    eprintln!("{}:{}: {}", "commit", "start", env::cycle_count());
+    env::commit(&state_root);
+    eprintln!("{}:{}: {}", "commit", "end", env::cycle_count());
 }

@@ -122,38 +122,8 @@ fn main() {
         // Extract the receipt.
         let receipt = prove_info.receipt;
 
-        // let result: BeaconState = receipt.journal.decode().unwrap();
-
         receipt.verify(CONSENSUS_STF_ID).unwrap();
 
-        // // Match `post_state_opt`: some test cases should not mutate beacon state.
-        // let post_state_opt: Option<BeaconState> = {
-        //     if case_dir.join("post.ssz_snappy").exists() {
-        //         Some(read_file(&case_dir.join("post.ssz_snappy")))
-        //     } else {
-        //         None
-        //     }
-        // };
-        //
-        // match post_state_opt {
-        //     Some(post_state) => {
-        //         assert_eq!(result, post_state);
-        //         info!("Execution is correct!: State mutated");
-        //     }
-        //     None => {
-        //         assert_eq!(result, pre_state);
-        //         info!("Execution is correct!: State should not be mutated");
-        //     }
-        // }
-
-        // // Record the number of cycles executed.
-        // info!("----- Cycle Tracker -----");
-        // info!("[{}] Test case: {}", operation_name, test_case);
-        // info!("Number of cycles: {}", report.total_instruction_count());
-        // info!("Number of syscall count: {}", report.total_syscall_count());
-        // for (key, value) in report.cycle_tracker.iter() {
-        //     info!("{}: {}", key, value);
-        // }
         info!("----- Cycle Tracker End -----");
 
         info!("{}", "-".repeat(50));
