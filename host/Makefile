@@ -9,9 +9,13 @@ SORT_SCRIPT = ./subscripts/sort_table.sh
 
 OPERATIONS = attestation attester_slashing block_header bls_to_execution_change deposit execution_payload proposer_slashing sync_aggregate voluntary_exit withdrawals
 
+RISC0_DEV_MODE = 1
+RUST_BACKTRACE = 0
+
 .PHONY: all download run clean $(addprefix run-, $(OPERATIONS))
 
-all: download run-attestation
+# run-execution_payload is excluded
+all: download run-attestation run-attester_slashing run-block_header run-bls_to_execution_change run-deposit run-proposer_slashing run-sync_aggregate run-voluntary_exit run-withdrawals
 
 download:
 	@echo "Running download script..."
@@ -25,11 +29,14 @@ run:
 $(addprefix run-, $(OPERATIONS)): run-%: $(EXTRACT_DIR)
 	@mkdir -p $(LOGS_DIR)
 	@mkdir -p $(SUMMARIES_DIR)
+	@echo "##################################################"
 	@echo "Running benchmarks for $*..."
-	@NO_COLOR=1 cargo run --release -- --execute -o $* \
-		--excluded-cases multi_proposer_index_iterations \ # attestation
-		--excluded-cases random_with_exits_with_duplicates \ # sync_aggregate
-		&> $(LOGS_DIR)/execution_$*.log
+	@echo "##################################################"
+	@NO_COLOR=1 RISC0_DEV_MODE=$(RISC0_DEV_MODE) RUST_BACKTRACE=$(RUST_BACKTRACE) \
+		cargo run --release -- -o $* \
+			--excluded-cases multi_proposer_index_iterations \
+			--excluded-cases random_with_exits_with_duplicates \
+			&> $(LOGS_DIR)/execution_$*.log
 	@echo "Execution complete for $*."
 	@$(PARSE_SCRIPT) $*
 	@$(SORT_SCRIPT) $(SUMMARIES_DIR)/summary_$*.md

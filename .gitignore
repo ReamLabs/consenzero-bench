@@ -3,4 +3,8 @@ target/
 .vscode/
 
 # EF test data
-scripts/mainnet/
+host/mainnet/
+
+# Logs and Summaries
+host/logs/
+host/summaries/
