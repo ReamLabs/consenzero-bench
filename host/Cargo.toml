@@ -12,9 +12,12 @@ serde_json = { version = "1.0", default-features = false, features = ["alloc"] }
 serde = { version = "1.0.200", default-features = false, features = ["derive"] }
 derive_more = { version = "2.0.1", features = ["full"] }
 clap = { version = "4.0", features = ["derive", "env"] }
-tracing = { workspace = true }
 hex = "0.4.3"
 dotenv = "0.15.0"
+methods = { path = "../methods" }
+risc0-zkvm = { version = "2.0.1" }
+tracing = { workspace = true }
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 
 # Ethereum dependencies
 ethereum_ssz = { workspace = true }
@@ -22,6 +25,3 @@ ethereum_ssz = { workspace = true }
 # Ream dependencies
 ream-consensus = { workspace = true }
 ream-lib = { path = "../lib" }
-
-[build-dependencies]
-sp1-build = "4.0.0"

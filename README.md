@@ -12,7 +12,7 @@
 ### Generate benchmarks
 
 ```sh
-cd script
+cd host
 make download
 make run-<OPERATION_NAME>
 ```
@@ -21,4 +21,4 @@ make run-<OPERATION_NAME>
 OPERATIONS = attestation attester_slashing block_header bls_to_execution_change deposit execution_payload proposer_slashing sync_aggregate voluntary_exit withdrawals
 ```
 
-This will execute the program and generate benchmarks (especially for cycles) in `./script/summaries` directory.
+This will execute the program and generate benchmarks (especially for cycles) in `./host/summaries` directory.
