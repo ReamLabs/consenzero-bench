@@ -14,7 +14,8 @@ RUST_BACKTRACE = 0
 
 .PHONY: all download run clean $(addprefix run-, $(OPERATIONS))
 
-all: download run-attestation run-attester_slashing run-block_header run-bls_to_execution_change run-deposit run-execution_payload run-proposer_slashing run-sync_aggregate run-voluntary_exit run-withdrawals
+# run-execution_payload is excluded
+all: download run-attestation run-attester_slashing run-block_header run-bls_to_execution_change run-deposit run-proposer_slashing run-sync_aggregate run-voluntary_exit run-withdrawals
 
 download:
 	@echo "Running download script..."
@@ -28,9 +29,9 @@ run:
 $(addprefix run-, $(OPERATIONS)): run-%: $(EXTRACT_DIR)
 	@mkdir -p $(LOGS_DIR)
 	@mkdir -p $(SUMMARIES_DIR)
-	@echo "##############################"
+	@echo "##################################################"
 	@echo "Running benchmarks for $*..."
-	@echo "##############################"
+	@echo "##################################################"
 	@NO_COLOR=1 RISC0_DEV_MODE=$(RISC0_DEV_MODE) RUST_BACKTRACE=$(RUST_BACKTRACE) \
 		cargo run --release -- -o $* \
 			--excluded-cases multi_proposer_index_iterations \
