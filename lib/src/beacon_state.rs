@@ -13,13 +13,11 @@ use ream_consensus::{
     beacon_block_header::BeaconBlockHeader,
     bls_to_execution_change::SignedBLSToExecutionChange,
     checkpoint::Checkpoint,
-    deposit::Deposit,
     deneb::{
-        beacon_block::BeaconBlock,
-        beacon_state::BeaconState as ReamBeaconState,
-        execution_payload::ExecutionPayload,
-        execution_payload_header::ExecutionPayloadHeader,
+        beacon_block::BeaconBlock, beacon_state::BeaconState as ReamBeaconState,
+        execution_payload::ExecutionPayload, execution_payload_header::ExecutionPayloadHeader,
     },
+    deposit::Deposit,
     eth_1_data::Eth1Data,
     fork::Fork,
     historical_summary::HistoricalSummary,
@@ -92,7 +90,10 @@ impl BeaconState {
         ReamBeaconState::process_attestation(&mut self.into(), attestation)
     }
 
-    pub fn process_attester_slashing(self, attester_slashing: &AttesterSlashing) -> anyhow::Result<()> {
+    pub fn process_attester_slashing(
+        self,
+        attester_slashing: &AttesterSlashing,
+    ) -> anyhow::Result<()> {
         ReamBeaconState::process_attester_slashing(&mut self.into(), attester_slashing)
     }
 
