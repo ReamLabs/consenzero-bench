@@ -28,7 +28,9 @@ run:
 $(addprefix run-, $(OPERATIONS)): run-%: $(EXTRACT_DIR)
 	@mkdir -p $(LOGS_DIR)
 	@mkdir -p $(SUMMARIES_DIR)
+	@echo "##############################"
 	@echo "Running benchmarks for $*..."
+	@echo "##############################"
 	@NO_COLOR=1 RISC0_DEV_MODE=$(RISC0_DEV_MODE) RUST_BACKTRACE=$(RUST_BACKTRACE) \
 		cargo run --release -- -o $* \
 			--excluded-cases multi_proposer_index_iterations \
