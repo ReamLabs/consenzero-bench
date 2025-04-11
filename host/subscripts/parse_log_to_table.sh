@@ -6,8 +6,8 @@ LOG_FILE="logs/execution_$OPERATION.log"
 OUTPUT_FILE="summaries/summary_$OPERATION.md"
 
 # Table Header
-echo '| Operation | Test Case | Read Pre-State | Read Operation | Process | Execution Time |' > $OUTPUT_FILE
-echo '|-----------|-----------|----------------|----------------|---------|----------------|' >> $OUTPUT_FILE
+echo '| Operation | Test Case | Read Pre-State | Read Operation | Process | Merkleize | Commit | Execution Time |' > $OUTPUT_FILE
+echo '|-----------|-----------|----------------|----------------|---------|-----------|--------|----------------|' >> $OUTPUT_FILE
 
 awk '
 BEGIN {
@@ -19,6 +19,10 @@ BEGIN {
     read_operation_input_end = 0;
     process_operation_start = 0;
     process_operation_end = 0;
+    merkleize_operation_start = 0;
+    merkleize_operation_end = 0;
+    commit_start = 0;
+    commit_end = 0;
     execution_time = 0;
 }
 
@@ -52,12 +56,28 @@ BEGIN {
     process_operation_end = $NF;
 }
 
+/merkleize-operation:start:/ {
+    merkleize_operation_start = $NF;
+}
+
+/merkleize-operation:end:/ {
+    merkleize_operation_end = $NF;
+}
+
+/commit:start:/ {
+    commit_start = $NF;
+}
+
+/commit:end:/ {
+    commit_end = $NF;
+}
+
 /execution time:/ {
     execution_time = $NF;
 }
 
 /----- Cycle Tracker End -----/ {
-    printf "%s | %s | %d | %d | %d | %s |\n", op, test_case, read_pre_state_end-read_pre_state_start, read_operation_input_end-read_operation_input_start, process_operation_end-process_operation_start, execution_time >> "'$OUTPUT_FILE'"
+    printf "%s | %s | %d | %d | %d | %d | %d | %s |\n", op, test_case, read_pre_state_end-read_pre_state_start, read_operation_input_end-read_operation_input_start, process_operation_end-process_operation_start, merkleize_operation_end-merkleize_operation_start, commit_end-commit_start, execution_time >> "'$OUTPUT_FILE'"
 
     # Re-initialize for next log
     op = "";
@@ -68,6 +88,10 @@ BEGIN {
     read_operation_input_end = 0;
     process_operation_start = 0;
     process_operation_end = 0;
+    merkleize_operation_start = 0;
+    merkleize_operation_end = 0;
+    commit_start = 0;
+    commit_end = 0;
     execution_time = 0;
 }
 ' $LOG_FILE

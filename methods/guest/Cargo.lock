@@ -712,6 +712,8 @@ dependencies = [
  "ream-consensus",
  "ream-lib",
  "risc0-zkvm",
+ "tree_hash",
+ "tree_hash_derive",
 ]
 
 [[package]]
@@ -1831,6 +1833,8 @@ dependencies = [
  "snap",
  "ssz_types",
  "tracing",
+ "tree_hash",
+ "tree_hash_derive",
 ]
 
 [[package]]
