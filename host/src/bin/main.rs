@@ -2,8 +2,8 @@ use clap::Parser;
 use risc0_zkvm::{default_prover, ExecutorEnv};
 use tracing::{error, info};
 
-use ream_lib::{file::read_file, input::OperationInput, beacon_state::BeaconState};
 use ream_consensus::deneb::beacon_state::BeaconState as ReamBeaconState;
+use ream_lib::{beacon_state::BeaconState, file::read_file, input::OperationInput};
 
 mod cli;
 use cli::operation::OperationName;
