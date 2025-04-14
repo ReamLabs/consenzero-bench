@@ -14,8 +14,8 @@ RUST_BACKTRACE = 0
 
 .PHONY: all download run clean $(addprefix run-, $(OPERATIONS))
 
-# run-execution_payload is excluded
-all: download run-attestation run-attester_slashing run-block_header run-bls_to_execution_change run-deposit run-proposer_slashing run-sync_aggregate run-voluntary_exit run-withdrawals
+# run-execution_payload (not implemented) and run-withdrawals (incompatible with BeaconState workaround) are excluded
+all: download run-attestation run-attester_slashing run-block_header run-bls_to_execution_change run-deposit run-proposer_slashing run-sync_aggregate run-voluntary_exit
 
 download:
 	@echo "Running download script..."
