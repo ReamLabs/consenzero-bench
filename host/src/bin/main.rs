@@ -3,7 +3,7 @@ use risc0_zkvm::{default_prover, ExecutorEnv};
 use tracing::{error, info};
 
 use ream_consensus::deneb::beacon_state::BeaconState as ReamBeaconState;
-use ream_lib::{beacon_state::BeaconState, file::read_file, input::OperationInput};
+use ream_lib::{file::read_file, input::OperationInput, input::InputState};
 
 mod cli;
 use cli::operation::OperationName;
@@ -101,7 +101,7 @@ fn main() {
             OperationName::Withdrawals => OperationInput::ExecutionPayload(read_file(input_path)),
         };
 
-        let sanitized_pre_state: BeaconState = pre_state.into();
+        let sanitized_pre_state = InputState::FullState(pre_state.into());
 
         // Setup the executor environment and inject inputs
         let env = ExecutorEnv::builder()

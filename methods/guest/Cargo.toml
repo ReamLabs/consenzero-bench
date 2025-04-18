@@ -13,6 +13,7 @@ risc0-zkvm = { version = "2.0.1", default-features = false, features = ['std'] }
 ethereum_ssz = "0.8.2"
 ream-consensus = { git = "https://github.com/ReamLabs/ream.git", package = "ream-consensus" }
 ream-lib = { path = "../../lib" }
+consensus-common = { path = "../../consensus/common" }
 tree_hash = "0.9"
 tree_hash_derive = "0.9"
 

@@ -25,3 +25,7 @@ ethereum_ssz = { workspace = true }
 # Ream dependencies
 ream-consensus = { workspace = true }
 ream-lib = { path = "../lib" }
+
+# Internal crate dependencies
+consensus-beacon-state.workspace = true
+consensus-common.workspace = true

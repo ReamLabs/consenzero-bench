@@ -19,3 +19,6 @@ tree_hash_derive = "0.9"
 
 # Ream dependencies
 ream-consensus = { workspace = true }
+
+# Internal dependencies
+consensus-common = { workspace = true }
