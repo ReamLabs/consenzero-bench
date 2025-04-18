@@ -2805,6 +2805,8 @@ dependencies = [
  "ream-consensus",
  "serde",
  "snap",
+ "ssz_rs",
+ "ssz_rs_derive 0.9.0 (git+https://github.com/ralexstokes/ssz-rs.git)",
  "ssz_types",
  "tracing",
  "tree_hash",

@@ -12,14 +12,18 @@ use ream_consensus::{
     sync_aggregate::SyncAggregate,
     voluntary_exit::SignedVoluntaryExit,
 };
-use consensus_common::proof::Proof;
+use consensus_common::{beacon_block_header::BeaconBlockHeader, proof::Proof};
 use serde::{Deserialize, Serialize};
-use crate::beacon_state::BeaconState;
+
+use crate::{
+    beacon_state::BeaconState,
+    partial_input::PartialInput,
+};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub enum InputState {
     FullState(BeaconState),
-    PartialState(Proof),
+    PartialState(PartialInput),
 }
 
 #[derive(Serialize, Deserialize, Debug)]

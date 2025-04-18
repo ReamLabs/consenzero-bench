@@ -3,7 +3,7 @@ use risc0_zkvm::{default_prover, ExecutorEnv};
 use tracing::{error, info};
 
 use ream_consensus::deneb::beacon_state::BeaconState as ReamBeaconState;
-use ream_lib::{file::read_file, input::OperationInput, input::InputState};
+use ream_lib::{file::read_file, input::InputState, input::OperationInput};
 
 mod cli;
 use cli::operation::OperationName;
@@ -22,6 +22,10 @@ struct Args {
 
     #[clap(flatten)]
     operation: cli::operation::OperationArgs,
+
+    // Pass only partial state into the zkVM
+    #[arg(short, long, default_value_t = false)]
+    partial_state: bool,
 
     #[clap(long)]
     excluded_cases: Vec<String>,
@@ -52,6 +56,7 @@ fn main() {
 
     let fork = args.fork.fork;
     let operation_name = args.operation.operation_name;
+    let partial_state = args.partial_state;
     let excluded_cases = args.excluded_cases;
 
     // Load the test assets.
@@ -74,9 +79,9 @@ fn main() {
         info!("[{}] Test case: {}", operation_name, test_case);
 
         let case_dir = &base_dir.join(&test_case);
-        let input_path = &case_dir.join(format!("{}.ssz_snappy", operation_name.to_input_name()));
+        let state: ReamBeaconState = read_file(&case_dir.join("pre.ssz_snappy"));
 
-        let pre_state: ReamBeaconState = read_file(&case_dir.join("pre.ssz_snappy"));
+        let input_path = &case_dir.join(format!("{}.ssz_snappy", operation_name.to_input_name()));
 
         let input = match operation_name {
             OperationName::Attestation => OperationInput::Attestation(read_file(input_path)),
@@ -101,16 +106,26 @@ fn main() {
             OperationName::Withdrawals => OperationInput::ExecutionPayload(read_file(input_path)),
         };
 
-        let sanitized_pre_state = InputState::FullState(pre_state.into());
-
+        //
         // Setup the executor environment and inject inputs
-        let env = ExecutorEnv::builder()
-            .write(&sanitized_pre_state)
-            .unwrap()
-            .write(&input)
-            .unwrap()
-            .build()
-            .unwrap();
+        //
+        let env = if partial_state {
+            ExecutorEnv::builder()
+                .write(&InputState::PartialState)
+                .unwrap()
+                .write(&input)
+                .unwrap()
+                .build()
+                .unwrap()
+        } else {
+            ExecutorEnv::builder()
+                .write(&InputState::FullState(state.into()))
+                .unwrap()
+                .write(&input)
+                .unwrap()
+                .build()
+                .unwrap()
+        };
 
         // Execute the program
         let prover = default_prover();

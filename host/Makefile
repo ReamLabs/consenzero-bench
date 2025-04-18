@@ -33,7 +33,7 @@ $(addprefix run-, $(OPERATIONS)): run-%: $(EXTRACT_DIR)
 	@echo "Running benchmarks for $*..."
 	@echo "##################################################"
 	@NO_COLOR=1 RISC0_DEV_MODE=$(RISC0_DEV_MODE) RUST_BACKTRACE=$(RUST_BACKTRACE) \
-		cargo run --release -- -o $* \
+		cargo run --release -- --operation-name $* \
 			--excluded-cases multi_proposer_index_iterations \
 			--excluded-cases random_with_exits_with_duplicates \
 			&> $(LOGS_DIR)/execution_$*.log
