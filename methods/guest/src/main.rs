@@ -38,7 +38,8 @@ fn main() {
     env::read_slice(&mut pre_state_ssz_bytes);
     eprintln!("{}:{}: {}", "read-pre-state-ssz", "end", env::cycle_count());
 
-    let pre_state: TinyBeaconState = deserialize(&pre_state_ssz_bytes);
+    // TODO: This is where the guest fails. Use TinyBeaconState (2^29 instead of 2^40 lists)
+    let pre_state: BeaconState = deserialize(&pre_state_ssz_bytes);
 
     eprintln!("{}:{}: {}", "read-operation-input", "start", env::cycle_count());
     let input: OperationInput = env::read();
