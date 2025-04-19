@@ -33,10 +33,12 @@ fn main() {
     // Read inputs to the program.
 
     eprintln!("{}:{}: {}", "read-pre-state-ssz", "start", env::cycle_count());
-    let pre_state_ssz_bytes: Vec<u8> = env::read();
+    let pre_state_len: usize = env::read();
+    let mut pre_state_ssz_bytes = vec![0u8; pre_state_len];
+    env::read_slice(&mut pre_state_ssz_bytes);
     eprintln!("{}:{}: {}", "read-pre-state-ssz", "end", env::cycle_count());
 
-    let pre_state: BeaconState = deserialize(&pre_state_ssz_bytes);
+    let pre_state: TinyBeaconState = deserialize(&pre_state_ssz_bytes);
 
     eprintln!("{}:{}: {}", "read-operation-input", "start", env::cycle_count());
     let input: OperationInput = env::read();

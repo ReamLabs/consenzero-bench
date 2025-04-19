@@ -105,10 +105,14 @@ fn main() {
 
         // Setup the executor environment and inject inputs
         let env = ExecutorEnv::builder()
-            .write(&pre_state)
+            // Pre-state
+            .write(&pre_state.len())
             .unwrap()
+            .write_slice(&pre_state)
+            // Operation input
             .write(&input)
             .unwrap()
+            // Build the environment
             .build()
             .unwrap();
 
