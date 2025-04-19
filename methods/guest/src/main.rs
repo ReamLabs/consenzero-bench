@@ -1,17 +1,42 @@
 use risc0_zkvm::guest::env;
 use tree_hash::TreeHash;
 
+use ream_consensus::{
+    attestation::Attestation,
+    attester_slashing::AttesterSlashing,
+    bls_to_execution_change::SignedBLSToExecutionChange,
+    deneb::{
+        beacon_block::BeaconBlock,
+        execution_payload::ExecutionPayload,
+        beacon_state::BeaconState,
+    },
+    deposit::Deposit,
+    proposer_slashing::ProposerSlashing,
+    sync_aggregate::SyncAggregate,
+    voluntary_exit::SignedVoluntaryExit,
+};
 use ream_lib::{
-    beacon_state::BeaconState,
-    input::OperationInput
+    input::OperationInput,
+    beacon_state::BeaconState as TinyBeaconState,
+    ssz::to_ssz,
 };
 
-fn main() {
-    // Read an input to the program.
+fn deserialize<T: ssz::Decode>(ssz_bytes: &[u8]) -> T {
+    eprintln!("{}-{}:{}: {}", "deserialize", std::any::type_name::<T>(), "start", env::cycle_count());
+    let deserialized = to_ssz(&ssz_bytes).unwrap();
+    eprintln!("{}-{}:{}: {}", "deserialize", std::any::type_name::<T>(), "end", env::cycle_count());
 
-    eprintln!("{}:{}: {}", "read-pre-state", "start", env::cycle_count());
-    let pre_state: BeaconState = env::read();
-    eprintln!("{}:{}: {}", "read-pre-state", "end", env::cycle_count());
+    deserialized
+}
+
+fn main() {
+    // Read inputs to the program.
+
+    eprintln!("{}:{}: {}", "read-pre-state-ssz", "start", env::cycle_count());
+    let pre_state_ssz_bytes: Vec<u8> = env::read();
+    eprintln!("{}:{}: {}", "read-pre-state-ssz", "end", env::cycle_count());
+
+    let pre_state: BeaconState = deserialize(&pre_state_ssz_bytes);
 
     eprintln!("{}:{}: {}", "read-operation-input", "start", env::cycle_count());
     let input: OperationInput = env::read();
@@ -23,35 +48,45 @@ fn main() {
     eprintln!("{}:{}: {}", "process-operation", "start", env::cycle_count());
 
     match input {
-        OperationInput::Attestation(attestation) => {
+        OperationInput::Attestation(ssz_bytes) => {
+            let attestation: Attestation = deserialize(&ssz_bytes);
             let _ = pre_state.clone().process_attestation(&attestation);
         }
-        OperationInput::AttesterSlashing(attester_slashing) => {
+        OperationInput::AttesterSlashing(ssz_bytes) => {
+            let attester_slashing: AttesterSlashing = deserialize(&ssz_bytes);
             let _ = pre_state.clone().process_attester_slashing(&attester_slashing);
         }
-        OperationInput::BeaconBlock(block) => {
+        OperationInput::BeaconBlock(ssz_bytes) => {
+            let block: BeaconBlock = deserialize(&ssz_bytes);
             let _ = pre_state.clone().process_block_header(&block);
         }
-        OperationInput::SignedBLSToExecutionChange(bls_change) => {
+        OperationInput::SignedBLSToExecutionChange(ssz_bytes) => {
+            let bls_change: SignedBLSToExecutionChange = deserialize(&ssz_bytes);
             let _ = pre_state.clone().process_bls_to_execution_change(&bls_change);
         }
-        OperationInput::Deposit(deposit) => {
+        OperationInput::Deposit(ssz_bytes) => {
+            let deposit: Deposit = deserialize(&ssz_bytes);
             let _ = pre_state.clone().process_deposit(&deposit);
         }
-        OperationInput::BeaconBlockBody(_block_body) => {
+        OperationInput::BeaconBlockBody(_ssz_bytes) => {
             panic!("Not implemented");
+            // let block_body: BeaconBlockBody = deserialize(&ssz_bytes);
             // let _ = pre_state.clone().process_execution_payload(&block_body);
         }
-        OperationInput::ProposerSlashing(proposer_slashing) => {
+        OperationInput::ProposerSlashing(ssz_bytes) => {
+            let proposer_slashing: ProposerSlashing = deserialize(&ssz_bytes);
             let _ = pre_state.clone().process_proposer_slashing(&proposer_slashing);
         }
-        OperationInput::SyncAggregate(sync_aggregate) => {
+        OperationInput::SyncAggregate(ssz_bytes) => {
+            let sync_aggregate: SyncAggregate = deserialize(&ssz_bytes);
             let _ = pre_state.clone().process_sync_aggregate(&sync_aggregate);
         }
-        OperationInput::SignedVoluntaryExit(voluntary_exit) => {
+        OperationInput::SignedVoluntaryExit(ssz_bytes) => {
+            let voluntary_exit: SignedVoluntaryExit = deserialize(&ssz_bytes);
             let _ = pre_state.clone().process_voluntary_exit(&voluntary_exit);
         }
-        OperationInput::ExecutionPayload(execution_payload) => {
+        OperationInput::ExecutionPayload(ssz_bytes) => {
+            let execution_payload: ExecutionPayload = deserialize(&ssz_bytes);
             let _ = pre_state.clone().process_withdrawals(&execution_payload);
         }
     }

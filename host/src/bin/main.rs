@@ -3,7 +3,7 @@ use risc0_zkvm::{default_prover, ExecutorEnv};
 use tracing::{error, info};
 
 use ream_consensus::deneb::beacon_state::BeaconState as ReamBeaconState;
-use ream_lib::{beacon_state::BeaconState, file::read_file, input::OperationInput};
+use ream_lib::{file::ssz_from_file, input::OperationInput};
 
 mod cli;
 use cli::operation::OperationName;
@@ -76,36 +76,36 @@ fn main() {
         let case_dir = &base_dir.join(&test_case);
         let input_path = &case_dir.join(format!("{}.ssz_snappy", operation_name.to_input_name()));
 
-        let pre_state: ReamBeaconState = read_file(&case_dir.join("pre.ssz_snappy"));
+        let pre_state: Vec<u8> = ssz_from_file(&case_dir.join("pre.ssz_snappy"));
 
         let input = match operation_name {
-            OperationName::Attestation => OperationInput::Attestation(read_file(input_path)),
+            OperationName::Attestation => OperationInput::Attestation(ssz_from_file(input_path)),
             OperationName::AttesterSlashing => {
-                OperationInput::AttesterSlashing(read_file(input_path))
+                OperationInput::AttesterSlashing(ssz_from_file(input_path))
             }
-            OperationName::BlockHeader => OperationInput::BeaconBlock(read_file(input_path)),
+            OperationName::BlockHeader => OperationInput::BeaconBlock(ssz_from_file(input_path)),
             OperationName::BLSToExecutionChange => {
-                OperationInput::SignedBLSToExecutionChange(read_file(input_path))
+                OperationInput::SignedBLSToExecutionChange(ssz_from_file(input_path))
             }
-            OperationName::Deposit => OperationInput::Deposit(read_file(input_path)),
+            OperationName::Deposit => OperationInput::Deposit(ssz_from_file(input_path)),
             OperationName::ExecutionPayload => {
-                OperationInput::BeaconBlockBody(read_file(input_path))
+                OperationInput::BeaconBlockBody(ssz_from_file(input_path))
             }
             OperationName::ProposerSlashing => {
-                OperationInput::ProposerSlashing(read_file(input_path))
+                OperationInput::ProposerSlashing(ssz_from_file(input_path))
             }
-            OperationName::SyncAggregate => OperationInput::SyncAggregate(read_file(input_path)),
+            OperationName::SyncAggregate => OperationInput::SyncAggregate(ssz_from_file(input_path)),
             OperationName::VoluntaryExit => {
-                OperationInput::SignedVoluntaryExit(read_file(input_path))
+                OperationInput::SignedVoluntaryExit(ssz_from_file(input_path))
             }
-            OperationName::Withdrawals => OperationInput::ExecutionPayload(read_file(input_path)),
+            OperationName::Withdrawals => OperationInput::ExecutionPayload(ssz_from_file(input_path)),
         };
 
-        let sanitized_pre_state: BeaconState = pre_state.into();
+        // let sanitized_pre_state: BeaconState = pre_state.into();
 
         // Setup the executor environment and inject inputs
         let env = ExecutorEnv::builder()
-            .write(&sanitized_pre_state)
+            .write(&pre_state)
             .unwrap()
             .write(&input)
             .unwrap()
