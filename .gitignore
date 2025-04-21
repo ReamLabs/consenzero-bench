@@ -1,6 +1,7 @@
 .DS_Store
 target/
 .vscode/
+.idea
 
 # EF test data
 host/mainnet/
