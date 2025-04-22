@@ -8,7 +8,6 @@ use ream_consensus::{
     deneb::{
         beacon_block::BeaconBlock,
         execution_payload::ExecutionPayload,
-        beacon_state::BeaconState,
     },
     deposit::Deposit,
     proposer_slashing::ProposerSlashing,
@@ -39,7 +38,7 @@ fn main() {
     eprintln!("{}:{}: {}", "read-pre-state-ssz", "end", env::cycle_count());
 
     // TODO: This is where the guest fails. Use TinyBeaconState (2^29 instead of 2^40 lists)
-    let pre_state: BeaconState = deserialize(&pre_state_ssz_bytes);
+    let pre_state: TinyBeaconState = deserialize(&pre_state_ssz_bytes);
 
     eprintln!("{}:{}: {}", "read-operation-input", "start", env::cycle_count());
     let input: OperationInput = env::read();
