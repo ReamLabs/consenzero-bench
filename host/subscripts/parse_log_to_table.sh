@@ -87,7 +87,7 @@ BEGIN {
 }
 
 /----- Cycle Tracker End -----/ {
-    printf "%s | %s | %d | %d | %d | %d | %d | %d | %s |\n", op, test_case, read_pre_state_ssz_end-read_pre_state_ssz_start, deserialize_pre_state_ssz_end-deserialize_pre_state_ssz_start, read_operation_input_end-read_operation_input_start, process_operation_end-process_operation_start, merkleize_operation_end-merkleize_operation_start, commit_end-commit_start, commit_end, execution_time >> "'$OUTPUT_FILE'"
+    printf "%s | %s | %d | %d | %d | %d | %d | %d | %d | %s |\n", op, test_case, read_pre_state_ssz_end-read_pre_state_ssz_start, deserialize_pre_state_ssz_end-deserialize_pre_state_ssz_start, read_operation_input_end-read_operation_input_start, process_operation_end-process_operation_start, merkleize_operation_end-merkleize_operation_start, commit_end-commit_start, commit_end, execution_time >> "'$OUTPUT_FILE'"
 
     # Re-initialize for next log
     op = "";
