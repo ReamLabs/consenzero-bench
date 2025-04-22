@@ -16,8 +16,6 @@ ream-lib = { path = "../../lib" }
 tree_hash = "0.9"
 tree_hash_derive = "0.9"
 
-
-
 [patch.crates-io]
 ethereum_hashing = { git = "https://github.com/ReamLabs/ethereum_hashing" } # Add ethereum_hashing::Sha256Context that's failing tree_hash crate used by ream
 sha2 = { git = "https://github.com/risc0/RustCrypto-hashes", tag = "sha2-v0.10.8-risczero.0" }
