@@ -2,7 +2,7 @@ use alloy_primitives::B256;
 use serde::{Deserialize, Serialize};
 use ssz_derive::{Decode, Encode};
 use ssz_types::{
-    typenum::{U536870912, U16777216, U2048, U4, U65536, U8192},
+    typenum::{U16777216, U2048, U4, U536870912, U65536, U8192},
     BitVector, FixedVector, VariableList,
 };
 use std::sync::Arc;
@@ -161,7 +161,8 @@ impl From<ReamBeaconState> for BeaconState {
             eth1_deposit_index: state.eth1_deposit_index,
 
             // Registry
-            validators: VariableList::<Validator, U536870912>::new(state.validators.to_vec()).unwrap(),
+            validators: VariableList::<Validator, U536870912>::new(state.validators.to_vec())
+                .unwrap(),
             balances: VariableList::<u64, U536870912>::new(state.balances.to_vec()).unwrap(),
 
             // Randomness
@@ -171,8 +172,14 @@ impl From<ReamBeaconState> for BeaconState {
             slashings: state.slashings,
 
             // // Participation
-            previous_epoch_participation: VariableList::<u8, U536870912>::new(state.previous_epoch_participation.to_vec()).unwrap(),
-            current_epoch_participation: VariableList::<u8, U536870912>::new(state.current_epoch_participation.to_vec()).unwrap(),
+            previous_epoch_participation: VariableList::<u8, U536870912>::new(
+                state.previous_epoch_participation.to_vec(),
+            )
+            .unwrap(),
+            current_epoch_participation: VariableList::<u8, U536870912>::new(
+                state.current_epoch_participation.to_vec(),
+            )
+            .unwrap(),
 
             // Finality
             justification_bits: state.justification_bits,
@@ -181,7 +188,10 @@ impl From<ReamBeaconState> for BeaconState {
             finalized_checkpoint: state.finalized_checkpoint,
 
             // // Inactivity
-            inactivity_scores: VariableList::<u64, U536870912>::new(state.inactivity_scores.to_vec()).unwrap(),
+            inactivity_scores: VariableList::<u64, U536870912>::new(
+                state.inactivity_scores.to_vec(),
+            )
+            .unwrap(),
 
             // Sync
             current_sync_committee: state.current_sync_committee,
