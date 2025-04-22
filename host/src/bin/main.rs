@@ -94,11 +94,15 @@ fn main() {
             OperationName::ProposerSlashing => {
                 OperationInput::ProposerSlashing(ssz_from_file(input_path))
             }
-            OperationName::SyncAggregate => OperationInput::SyncAggregate(ssz_from_file(input_path)),
+            OperationName::SyncAggregate => {
+                OperationInput::SyncAggregate(ssz_from_file(input_path))
+            }
             OperationName::VoluntaryExit => {
                 OperationInput::SignedVoluntaryExit(ssz_from_file(input_path))
             }
-            OperationName::Withdrawals => OperationInput::ExecutionPayload(ssz_from_file(input_path)),
+            OperationName::Withdrawals => {
+                OperationInput::ExecutionPayload(ssz_from_file(input_path))
+            }
         };
 
         // let sanitized_pre_state: BeaconState = pre_state.into();
