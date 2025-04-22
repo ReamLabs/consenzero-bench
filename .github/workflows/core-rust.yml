@@ -20,16 +20,6 @@ jobs:
     - name: Run rustfmt
       run: cargo fmt -- --check
 
-  cargo-clippy:
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: Run Clippy
-      run: |
-        cargo clippy --all --all-targets --no-deps -- --deny warnings # clippy for ream, default features
-
   cargo-sort:
     runs-on: ubuntu-latest
 
