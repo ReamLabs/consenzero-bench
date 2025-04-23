@@ -36,7 +36,7 @@ $(addprefix run-, $(OPERATIONS)): run-%: $(EXTRACT_DIR)
 		cargo run --release -- -o $* \
 			--excluded-cases multi_proposer_index_iterations \
 			--excluded-cases random_with_exits_with_duplicates \
-			&> $(LOGS_DIR)/execution_$*.log
+			2>&1 | tee $(LOGS_DIR)/execution_$*.log
 	@echo "Execution complete for $*."
 	@$(PARSE_SCRIPT) $*
 	@$(SORT_SCRIPT) $(SUMMARIES_DIR)/summary_$*.md
