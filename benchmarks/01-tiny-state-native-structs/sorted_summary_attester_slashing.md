@@ -1,0 +1,32 @@
+| Operation | Test Case | Read Pre-State | Read Operation | Process | Merkleize | Commit | Total Cycles | Execution Time |
+|-----------|-----------|----------------|----------------|---------|-----------|--------|--------------|----------------|
+attester_slashing | already_exited_long_ago | 46949445 | 16969 | 2596007 | 901681374 | 1013 | 951248028 | 21.448478625s |
+attester_slashing | already_exited_recent | 46949445 | 16969 | 2596007 | 901681374 | 1013 | 951248028 | 21.372177667s |
+attester_slashing | attestation_from_future | 46949445 | 16969 | 2596007 | 901681374 | 1013 | 951248028 | 21.136660041s |
+attester_slashing | basic_double | 46949445 | 16969 | 2596007 | 901681374 | 1013 | 951248028 | 21.052130375s |
+attester_slashing | basic_surround | 46951041 | 16969 | 2595915 | 901713397 | 1013 | 951281555 | 21.708482125s |
+attester_slashing | invalid_all_empty_indices | 46949445 | 14119 | 2064115 | 902102375 | 1013 | 951134287 | 22.022898292s |
+attester_slashing | invalid_att1_bad_extra_index | 46949445 | 17143 | 2596019 | 901681374 | 1013 | 951248214 | 22.355006333s |
+attester_slashing | invalid_att1_bad_replaced_index | 46949445 | 16969 | 2596007 | 901681374 | 1013 | 951248028 | 22.754945208s |
+attester_slashing | invalid_att1_duplicate_index_double_signed | 46949445 | 16969 | 2064236 | 902102375 | 1013 | 951137258 | 21.028871334s |
+attester_slashing | invalid_att1_duplicate_index_normal_signed | 46949445 | 16969 | 2064224 | 902102375 | 1013 | 951137246 | 21.952845667s |
+attester_slashing | invalid_att1_empty_indices | 46949445 | 15544 | 2064121 | 902102375 | 1013 | 951135718 | 21.774020583s |
+attester_slashing | invalid_att1_high_index | 46949445 | 17143 | 2596019 | 901681374 | 1013 | 951248214 | 21.550109416s |
+attester_slashing | invalid_att2_bad_extra_index | 46949445 | 17143 | 2596007 | 901681374 | 1013 | 951248202 | 21.201628708s |
+attester_slashing | invalid_att2_bad_replaced_index | 46949445 | 16969 | 2596007 | 901681374 | 1013 | 951248028 | 21.678694625s |
+attester_slashing | invalid_att2_duplicate_index_double_signed | 46949445 | 16969 | 2596007 | 901681374 | 1013 | 951248028 | 22.657946583s |
+attester_slashing | invalid_att2_duplicate_index_normal_signed | 46949445 | 16969 | 2596007 | 901681374 | 1013 | 951248028 | 21.461590042s |
+attester_slashing | invalid_att2_empty_indices | 46949445 | 15544 | 2596001 | 901681374 | 1013 | 951246597 | 21.173962958s |
+attester_slashing | invalid_att2_high_index | 46949445 | 17143 | 2596007 | 901681374 | 1013 | 951248202 | 21.529138875s |
+attester_slashing | invalid_incorrect_sig_1 | 46949445 | 16972 | 2596007 | 901681374 | 1013 | 951248031 | 21.544200291s |
+attester_slashing | invalid_incorrect_sig_1_and_2 | 46949445 | 16975 | 2596007 | 901681374 | 1013 | 951248034 | 21.941530667s |
+attester_slashing | invalid_incorrect_sig_2 | 46949445 | 16969 | 2596007 | 901681374 | 1013 | 951248028 | 21.6634955s |
+attester_slashing | invalid_no_double_or_surround | 46949445 | 16969 | 2064081 | 902102375 | 1013 | 951137103 | 21.471870791s |
+attester_slashing | invalid_participants_already_slashed | 46949453 | 16969 | 2596007 | 901681374 | 1013 | 951248036 | 21.307959166s |
+attester_slashing | invalid_same_data | 46949445 | 16969 | 2064305 | 902102375 | 1013 | 951137327 | 21.568837625s |
+attester_slashing | invalid_unsorted_att_1 | 46949445 | 16969 | 2064230 | 902102375 | 1013 | 951137252 | 21.57180175s |
+attester_slashing | invalid_unsorted_att_2 | 46949445 | 16969 | 2596007 | 901681374 | 1013 | 951248028 | 22.003797542s |
+attester_slashing | low_balances | 46949445 | 16969 | 2596007 | 901681374 | 1013 | 951248028 | 21.901818084s |
+attester_slashing | misc_balances | 46949445 | 16273 | 2595983 | 901681374 | 1013 | 951247308 | 21.838305375s |
+attester_slashing | proposer_index_slashed | 46951041 | 14533 | 2596094 | 901713397 | 1013 | 951279298 | 21.918143125s |
+attester_slashing | with_effective_balance_disparity | 46949445 | 16273 | 2595983 | 901681374 | 1013 | 951247308 | 21.613826541s |
