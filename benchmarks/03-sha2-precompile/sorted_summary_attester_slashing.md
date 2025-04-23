@@ -1,0 +1,32 @@
+| Operation | Test Case | Read Pre-State SSZ | Deserialize Pre-State SSZ | Read Operation Input | Process | Merkleize | Commit | Total Cycles | Execution Time |
+|-----------|-----------|--------------------|---------------------------|----------------------|---------|-----------|--------|--------------|----------------|
+attester_slashing | already_exited_long_ago | 264367 | 18696661 | 55488 | 2177652 | 237495772 | 1012 | 258695090 | 6.410542917s |
+attester_slashing | already_exited_recent | 264367 | 18696661 | 55488 | 2177652 | 237495772 | 1012 | 258695090 | 6.357387667s |
+attester_slashing | attestation_from_future | 264367 | 18696661 | 55488 | 2177652 | 237495772 | 1012 | 258695090 | 6.616522583s |
+attester_slashing | basic_double | 264367 | 18696661 | 55488 | 2177652 | 237495772 | 1012 | 258695090 | 6.295394417s |
+attester_slashing | basic_surround | 264371 | 18697243 | 55488 | 2177560 | 237505331 | 1012 | 258705143 | 6.35535s |
+attester_slashing | invalid_all_empty_indices | 264367 | 18696661 | 43712 | 2079090 | 237557349 | 1012 | 258646329 | 6.559113292s |
+attester_slashing | invalid_att1_bad_extra_index | 264367 | 18696661 | 56224 | 2177719 | 237495772 | 1012 | 258695893 | 6.479355459s |
+attester_slashing | invalid_att1_bad_replaced_index | 264367 | 18696661 | 55488 | 2177652 | 237495772 | 1012 | 258695090 | 6.356806417s |
+attester_slashing | invalid_att1_duplicate_index_double_signed | 264367 | 18696661 | 55488 | 2080185 | 237557349 | 1012 | 258659200 | 6.297535084s |
+attester_slashing | invalid_att1_duplicate_index_normal_signed | 264367 | 18696661 | 55488 | 2080173 | 237557349 | 1012 | 258659188 | 6.419298458s |
+attester_slashing | invalid_att1_empty_indices | 264367 | 18696661 | 49600 | 2079583 | 237557349 | 1012 | 258652710 | 6.346676583s |
+attester_slashing | invalid_att1_high_index | 264367 | 18696661 | 56224 | 2177719 | 237495772 | 1012 | 258695893 | 6.621420375s |
+attester_slashing | invalid_att2_bad_extra_index | 264367 | 18696661 | 56224 | 2177707 | 237495772 | 1012 | 258695881 | 6.407725916s |
+attester_slashing | invalid_att2_bad_replaced_index | 264367 | 18696661 | 55488 | 2177652 | 237495772 | 1012 | 258695090 | 6.339856291s |
+attester_slashing | invalid_att2_duplicate_index_double_signed | 264367 | 18696661 | 55488 | 2177652 | 237495772 | 1012 | 258695090 | 6.484426541s |
+attester_slashing | invalid_att2_duplicate_index_normal_signed | 264367 | 18696661 | 55488 | 2177652 | 237495772 | 1012 | 258695090 | 6.354843625s |
+attester_slashing | invalid_att2_empty_indices | 264367 | 18696661 | 49600 | 2177159 | 237495772 | 1012 | 258688709 | 6.345190833s |
+attester_slashing | invalid_att2_high_index | 264367 | 18696661 | 56224 | 2177707 | 237495772 | 1012 | 258695881 | 6.321497125s |
+attester_slashing | invalid_incorrect_sig_1 | 264367 | 18696661 | 55488 | 2177652 | 237495772 | 1012 | 258695090 | 6.464499583s |
+attester_slashing | invalid_incorrect_sig_1_and_2 | 264367 | 18696661 | 55488 | 2177652 | 237495772 | 1012 | 258695090 | 6.379668875s |
+attester_slashing | invalid_incorrect_sig_2 | 264367 | 18696661 | 55488 | 2177652 | 237495772 | 1012 | 258695090 | 6.385339042s |
+attester_slashing | invalid_no_double_or_surround | 264367 | 18696661 | 55488 | 2080030 | 237557349 | 1012 | 258659045 | 6.539444208s |
+attester_slashing | invalid_participants_already_slashed | 264367 | 18696677 | 55488 | 2177652 | 237495772 | 1012 | 258695106 | 6.362071125s |
+attester_slashing | invalid_same_data | 264367 | 18696661 | 55488 | 2080254 | 237557349 | 1012 | 258659269 | 6.380923958s |
+attester_slashing | invalid_unsorted_att_1 | 264367 | 18696661 | 55488 | 2080179 | 237557349 | 1012 | 258659194 | 6.430769125s |
+attester_slashing | invalid_unsorted_att_2 | 264367 | 18696661 | 55488 | 2177652 | 237495772 | 1012 | 258695090 | 6.482142209s |
+attester_slashing | low_balances | 264367 | 18696661 | 55488 | 2177652 | 237495772 | 1012 | 258695090 | 6.351083334s |
+attester_slashing | misc_balances | 264367 | 18696661 | 52544 | 2177408 | 237495772 | 1012 | 258691902 | 6.364040917s |
+attester_slashing | proposer_index_slashed | 264371 | 18697243 | 45184 | 2176969 | 237505331 | 1012 | 258694248 | 6.544404583s |
+attester_slashing | with_effective_balance_disparity | 264367 | 18696661 | 52544 | 2177408 | 237495772 | 1012 | 258691902 | 6.672275s |
