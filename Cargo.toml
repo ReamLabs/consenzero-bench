@@ -19,4 +19,10 @@ tracing = "0.1.40"
 ream-consensus = { git = "https://github.com/ReamLabs/ream", package = "ream-consensus" }
 
 [patch.crates-io]
-ethereum_hashing = { git = "https://github.com/ReamLabs/ethereum_hashing" }
+#ethereum_hashing = { git = "https://github.com/ReamLabs/ethereum_hashing" }
+# With poseidon2 hash
+ethereum_hashing = { git = "https://github.com/SuccinctPaul/ethereum_hashing", rev = "692ad3d" }
+
+
+[patch."https://github.com/ReamLabs/ethereum_hashing"]
+ethereum_hashing = { git = "https://github.com/SuccinctPaul/ethereum_hashing", rev = "692ad3d" }
