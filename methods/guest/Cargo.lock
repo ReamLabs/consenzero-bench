@@ -2319,8 +2319,7 @@ dependencies = [
 [[package]]
 name = "ssz_types"
 version = "0.10.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dad0fa7e9a85c06d0a6ba5100d733fff72e231eb6db2d86078225cf716fd2d95"
+source = "git+https://github.com/unnawut/ssz_types?branch=debug-usize#4b22307943b985329300e84908ffbe7c7771c627"
 dependencies = [
  "ethereum_serde_utils",
  "ethereum_ssz",

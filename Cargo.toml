@@ -20,3 +20,4 @@ ream-consensus = { git = "https://github.com/ReamLabs/ream", package = "ream-con
 
 [patch.crates-io]
 ethereum_hashing = { git = "https://github.com/ReamLabs/ethereum_hashing" }
+ssz_types = { git = "https://github.com/unnawut/ssz_types", branch = "debug-usize" }
