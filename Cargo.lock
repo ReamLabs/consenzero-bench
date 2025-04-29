@@ -1384,7 +1384,7 @@ dependencies = [
 [[package]]
 name = "ethereum_hashing"
 version = "0.7.0"
-source = "git+https://github.com/ReamLabs/ethereum_hashing#26e19aedff4d5bd5fd2c0923c7fbafdc8a8c0821"
+source = "git+https://github.com/ReamLabs/ethereum_hashing#e2566c68f13020afaea1176da3d93f6a0b930d5f"
 dependencies = [
  "sha2",
 ]
