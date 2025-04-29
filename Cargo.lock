@@ -1445,9 +1445,17 @@ dependencies = [
 [[package]]
 name = "ethereum_hashing"
 version = "0.7.0"
-source = "git+https://github.com/SuccinctPaul/ethereum_hashing?rev=692ad3d#692ad3d86a90bb8697601cea8d20a5b6766f6290"
+source = "git+https://github.com/ReamLabs/ethereum_hashing?branch=poseidon2#11f8c7bad0b163d3aa8e09a78d3a17c16167b6c1"
 dependencies = [
  "zkhash",
+]
+
+[[package]]
+name = "ethereum_hashing"
+version = "0.7.0"
+source = "git+https://github.com/ReamLabs/ethereum_hashing.git#26e19aedff4d5bd5fd2c0923c7fbafdc8a8c0821"
+dependencies = [
+ "sha2",
 ]
 
 [[package]]
@@ -2913,7 +2921,7 @@ dependencies = [
  "alloy-rlp",
  "anyhow",
  "async-trait",
- "ethereum_hashing",
+ "ethereum_hashing 0.7.0 (git+https://github.com/ReamLabs/ethereum_hashing.git)",
  "ethereum_serde_utils",
  "ethereum_ssz",
  "ethereum_ssz_derive",
@@ -4074,7 +4082,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6c58eb0f518840670270d90d97ffee702d8662d9c5494870c9e1e9e0fa00f668"
 dependencies = [
  "alloy-primitives",
- "ethereum_hashing",
+ "ethereum_hashing 0.7.0 (git+https://github.com/ReamLabs/ethereum_hashing?branch=poseidon2)",
  "ethereum_ssz",
  "smallvec",
  "typenum",
