@@ -14,10 +14,13 @@ lto = true
 edition = "2024"
 
 [workspace.dependencies]
-ethereum_ssz = "0.8.2"
+ethereum_ssz = "0.9"
 ream-consensus = { git = "https://github.com/ReamLabs/ream", package = "ream-consensus" }
-tracing = "0.1.40"
-tree_hash = "0.9"
+tracing = "0.1"
+tree_hash = { path = "../tree_hash/tree_hash" }
+tree_hash_derive = { path = "../tree_hash/tree_hash_derive" }
 
 [patch.crates-io]
 ethereum_hashing = { git = "https://github.com/ReamLabs/ethereum_hashing" }
+tree_hash = { path = "../tree_hash/tree_hash" }
+tree_hash_derive = { path = "../tree_hash/tree_hash_derive" }

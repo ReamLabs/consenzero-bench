@@ -2,7 +2,7 @@ use alloy_primitives::B256;
 use serde::{Deserialize, Serialize};
 use ssz_derive::{Decode, Encode};
 use ssz_types::{
-    typenum::{U16777216, U2048, U4, U536870912, U65536, U8192},
+    typenum::{U16777216, U134217728, U2048, U262144, U4, U536870912, U65536, U8192},
     BitVector, FixedVector, VariableList,
 };
 use std::sync::Arc;
@@ -14,7 +14,7 @@ use ream_consensus::{
     beacon_block_header::BeaconBlockHeader,
     bls_to_execution_change::SignedBLSToExecutionChange,
     checkpoint::Checkpoint,
-    deneb::{
+    electra::{
         beacon_block::BeaconBlock, beacon_state::BeaconState as ReamBeaconState,
         execution_payload::ExecutionPayload, execution_payload_header::ExecutionPayloadHeader,
     },
@@ -22,6 +22,9 @@ use ream_consensus::{
     eth_1_data::Eth1Data,
     fork::Fork,
     historical_summary::HistoricalSummary,
+    pending_consolidation::PendingConsolidation,
+    pending_deposit::PendingDeposit,
+    pending_partial_withdrawal::PendingPartialWithdrawal,
     proposer_slashing::ProposerSlashing,
     sync_aggregate::SyncAggregate,
     sync_committee::SyncCommittee,
@@ -87,6 +90,17 @@ pub struct BeaconState {
 
     // Deep history valid from Capella onwards.
     pub historical_summaries: VariableList<HistoricalSummary, U16777216>,
+
+    // Electra
+    pub deposit_requests_start_index: u64,
+    pub deposit_balance_to_consume: u64,
+    pub exit_balance_to_consume: u64,
+    pub earliest_exit_epoch: u64,
+    pub consolidation_balance_to_consume: u64,
+    pub earliest_consolidation_epoch: u64,
+    pub pending_deposits: VariableList<PendingDeposit, U134217728>,
+    pub pending_partial_withdrawals: VariableList<PendingPartialWithdrawal, U134217728>,
+    pub pending_consolidations: VariableList<PendingConsolidation, U262144>,
 }
 
 impl BeaconState {
@@ -206,6 +220,17 @@ impl From<ReamBeaconState> for BeaconState {
 
             // Deep history valid from Capella onwards.
             historical_summaries: state.historical_summaries,
+
+            // Electra
+            deposit_requests_start_index: state.deposit_requests_start_index,
+            deposit_balance_to_consume: state.deposit_balance_to_consume,
+            exit_balance_to_consume: state.exit_balance_to_consume,
+            earliest_exit_epoch: state.earliest_exit_epoch,
+            consolidation_balance_to_consume: state.consolidation_balance_to_consume,
+            earliest_consolidation_epoch: state.earliest_consolidation_epoch,
+            pending_deposits: state.pending_deposits,
+            pending_partial_withdrawals: state.pending_partial_withdrawals,
+            pending_consolidations: state.pending_consolidations,
         }
     }
 }
@@ -267,6 +292,17 @@ impl From<BeaconState> for ReamBeaconState {
 
             // Deep history valid from Capella onwards.
             historical_summaries: state.historical_summaries,
+
+            // Electra
+            deposit_requests_start_index: state.deposit_requests_start_index,
+            deposit_balance_to_consume: state.deposit_balance_to_consume,
+            exit_balance_to_consume: state.exit_balance_to_consume,
+            earliest_exit_epoch: state.earliest_exit_epoch,
+            consolidation_balance_to_consume: state.consolidation_balance_to_consume,
+            earliest_consolidation_epoch: state.earliest_consolidation_epoch,
+            pending_deposits: state.pending_deposits,
+            pending_partial_withdrawals: state.pending_partial_withdrawals,
+            pending_consolidations: state.pending_consolidations,
         }
     }
 }

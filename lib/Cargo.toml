@@ -10,12 +10,12 @@ snap = "1.1.1"
 tracing = { workspace = true }
 
 # ReamBeaconState
-alloy-primitives = { version = "0.8", features = ['serde'] }
+alloy-primitives = { version = "1.1", features = ['serde'] }
 anyhow = "1.0"
-ethereum_ssz_derive = "0.8"
-ssz_types = "0.10"
-tree_hash = "0.9"
-tree_hash_derive = "0.9"
+ethereum_ssz_derive = "0.9"
+ssz_types = "0.11"
+tree_hash = { workspace = true }
+tree_hash_derive = { workspace = true }
 
 # Ream dependencies
 ream-consensus = { workspace = true }
