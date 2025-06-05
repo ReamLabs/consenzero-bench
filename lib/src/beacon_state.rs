@@ -2,7 +2,7 @@ use alloy_primitives::B256;
 use serde::{Deserialize, Serialize};
 use ssz_derive::{Decode, Encode};
 use ssz_types::{
-    typenum::{U16777216, U134217728, U2048, U262144, U4, U536870912, U65536, U8192},
+    typenum::{U134217728, U16777216, U2048, U262144, U4, U536870912, U65536, U8192},
     BitVector, FixedVector, VariableList,
 };
 use std::sync::Arc;
@@ -14,11 +14,11 @@ use ream_consensus::{
     beacon_block_header::BeaconBlockHeader,
     bls_to_execution_change::SignedBLSToExecutionChange,
     checkpoint::Checkpoint,
+    deposit::Deposit,
     electra::{
         beacon_block::BeaconBlock, beacon_state::BeaconState as ReamBeaconState,
         execution_payload::ExecutionPayload, execution_payload_header::ExecutionPayloadHeader,
     },
-    deposit::Deposit,
     eth_1_data::Eth1Data,
     fork::Fork,
     historical_summary::HistoricalSummary,
