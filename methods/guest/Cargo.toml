@@ -10,11 +10,11 @@ edition = "2021"
 risc0-zkvm = { version = "2.0.1", default-features = false, features = ['std'] }
 
 # Ream dependencies
-ethereum_ssz = "0.8.2"
+ethereum_ssz = "0.9"
 ream-consensus = { git = "https://github.com/ReamLabs/ream.git", package = "ream-consensus" }
 ream-lib = { path = "../../lib" }
-tree_hash = "0.9"
-tree_hash_derive = "0.9"
+tree_hash = "0.10"
+tree_hash_derive = "0.10"
 
 [patch.crates-io]
 ethereum_hashing = { git = "https://github.com/ReamLabs/ethereum_hashing" } # Add ethereum_hashing::Sha256Context that's failing tree_hash crate used by ream

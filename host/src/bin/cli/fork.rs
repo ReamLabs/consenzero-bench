@@ -3,7 +3,7 @@ use derive_more::Display;
 
 #[derive(Debug, Clone, Parser)]
 pub struct ForkArgs {
-    #[clap(long, short, default_value_t = Fork::Deneb)]
+    #[clap(long, short, default_value_t = Fork::Electra)]
     pub fork: Fork,
 }
 
@@ -11,9 +11,9 @@ pub struct ForkArgs {
 #[clap(rename_all = "lowercase")]
 pub enum Fork {
     #[default]
-    #[display("deneb")]
-    Deneb,
-
     #[display("electra")]
     Electra,
+
+    #[display("fulu")]
+    Fulu,
 }

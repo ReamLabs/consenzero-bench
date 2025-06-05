@@ -5,7 +5,7 @@ use ream_consensus::{
     attestation::Attestation,
     attester_slashing::AttesterSlashing,
     bls_to_execution_change::SignedBLSToExecutionChange,
-    deneb::{
+    electra::{
         beacon_block::BeaconBlock,
         execution_payload::ExecutionPayload,
     },
