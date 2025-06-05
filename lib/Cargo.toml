@@ -5,9 +5,9 @@ edition = "2021"
 
 [dependencies]
 ethereum_ssz = { workspace = true }
+serde = { version = "1.0.200", default-features = false, features = ["derive"] }
 snap = "1.1.1"
 tracing = { workspace = true }
-serde = { version = "1.0.200", default-features = false, features = ["derive"] }
 
 # ReamBeaconState
 alloy-primitives = { version = "0.8", features = ['serde'] }

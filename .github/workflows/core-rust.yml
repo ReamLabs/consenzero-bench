@@ -17,8 +17,14 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Install Rust nightly
+      run: rustup install nightly
+
+    - name: Install rustfmt for nightly
+      run: rustup component add --toolchain nightly-x86_64-unknown-linux-gnu rustfmt
+
     - name: Run rustfmt
-      run: cargo fmt -- --check
+      run: cargo +nightly fmt -- --check
 
   cargo-sort:
     runs-on: ubuntu-latest
@@ -30,7 +36,7 @@ jobs:
       run: cargo install cargo-sort
 
     - name: Run cargo sort
-      run: cargo sort --grouped --check
+      run: cargo sort --workspace --grouped --check
 
   build:
     runs-on: ubuntu-latest
