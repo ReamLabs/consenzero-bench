@@ -17,6 +17,7 @@ edition = "2024"
 ethereum_ssz = "0.8.2"
 ream-consensus = { git = "https://github.com/ReamLabs/ream", package = "ream-consensus" }
 tracing = "0.1.40"
+tree_hash = "0.9"
 
 [patch.crates-io]
 ethereum_hashing = { git = "https://github.com/ReamLabs/ethereum_hashing" }
