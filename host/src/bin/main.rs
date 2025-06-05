@@ -126,7 +126,9 @@ fn main() {
 
         // Proof information by proving the specified ELF binary.
         // This struct contains the receipt along with statistics about execution of the guest
-        let prove_info = prover.prove_with_opts(env, CONSENSUS_STF_ELF, &opts).unwrap();
+        let prove_info = prover
+            .prove_with_opts(env, CONSENSUS_STF_ELF, &opts)
+            .unwrap();
 
         info!("Proving complete");
 
@@ -135,7 +137,10 @@ fn main() {
 
         info!("Seal size: {:#?}", receipt.seal_size());
         info!("Receipt: {:#?}", receipt);
-        info!("New state root: {:?}", receipt.journal.decode::<tree_hash::Hash256>().unwrap());
+        info!(
+            "New state root: {:?}",
+            receipt.journal.decode::<tree_hash::Hash256>().unwrap()
+        );
 
         receipt.verify(CONSENSUS_STF_ID).unwrap();
         info!("Verfication complete");
