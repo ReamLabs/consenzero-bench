@@ -928,6 +928,7 @@ dependencies = [
  "serde_json",
  "tracing",
  "tracing-subscriber 0.3.19",
+ "tree_hash",
 ]
 
 [[package]]
