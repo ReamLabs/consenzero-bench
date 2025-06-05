@@ -36,7 +36,7 @@ jobs:
       run: cargo install cargo-sort
 
     - name: Run cargo sort
-      run: cargo sort --grouped --check
+      run: cargo sort --workspace --grouped --check
 
   build:
     runs-on: ubuntu-latest
