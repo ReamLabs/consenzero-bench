@@ -1,5 +1,5 @@
 use clap::Parser;
-use risc0_zkvm::{default_prover, ExecutorEnv};
+use risc0_zkvm::{default_prover, ExecutorEnv, ProverOpts};
 use tracing::{error, info};
 
 use ream_consensus::deneb::beacon_state::BeaconState as ReamBeaconState;
@@ -122,15 +122,23 @@ fn main() {
 
         // Execute the program
         let prover = default_prover();
+        let opts = ProverOpts::succinct();
 
         // Proof information by proving the specified ELF binary.
         // This struct contains the receipt along with statistics about execution of the guest
-        let prove_info = prover.prove(env, CONSENSUS_STF_ELF).unwrap();
+        let prove_info = prover.prove_with_opts(env, CONSENSUS_STF_ELF, &opts).unwrap();
+
+        info!("Proving complete");
 
         // Extract the receipt.
         let receipt = prove_info.receipt;
 
+        info!("Seal size: {:#?}", receipt.seal_size());
+        info!("Receipt: {:#?}", receipt);
+        info!("New state root: {:?}", receipt.journal.decode::<tree_hash::Hash256>().unwrap());
+
         receipt.verify(CONSENSUS_STF_ID).unwrap();
+        info!("Verfication complete");
 
         info!("----- Cycle Tracker End -----");
 
