@@ -17,12 +17,12 @@ use ream_consensus::{
 };
 use ream_lib::{
     input::OperationInput,
-    ssz::to_ssz,
+    ssz::from_ssz_bytes,
 };
 
 fn deserialize<T: ssz::Decode>(ssz_bytes: &[u8]) -> T {
     eprintln!("{}-{}:{}: {}", "deserialize", std::any::type_name::<T>(), "start", env::cycle_count());
-    let deserialized = to_ssz(&ssz_bytes).unwrap();
+    let deserialized = from_ssz_bytes(&ssz_bytes).unwrap();
     eprintln!("{}-{}:{}: {}", "deserialize", std::any::type_name::<T>(), "end", env::cycle_count());
 
     deserialized

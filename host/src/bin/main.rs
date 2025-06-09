@@ -1,7 +1,9 @@
 use clap::Parser;
-use ream_lib::{file::ssz_from_file, input::OperationInput};
+use ream_consensus::electra::beacon_state::BeaconState;
+use ream_lib::{file::ssz_from_file, input::OperationInput, ssz::from_ssz_bytes};
 use risc0_zkvm::{default_prover, ExecutorEnv, ProverOpts};
 use tracing::{error, info};
+use tree_hash::TreeHash;
 
 mod cli;
 use cli::operation::OperationName;
@@ -74,7 +76,7 @@ fn main() {
         let case_dir = &base_dir.join(&test_case);
         let input_path = &case_dir.join(format!("{}.ssz_snappy", operation_name.to_input_name()));
 
-        let pre_state: Vec<u8> = ssz_from_file(&case_dir.join("pre.ssz_snappy"));
+        let pre_state_ssz_bytes: Vec<u8> = ssz_from_file(&case_dir.join("pre.ssz_snappy"));
 
         let input = match operation_name {
             OperationName::Attestation => OperationInput::Attestation(ssz_from_file(input_path)),
@@ -103,14 +105,12 @@ fn main() {
             }
         };
 
-        // let sanitized_pre_state: BeaconState = pre_state.into();
-
         // Setup the executor environment and inject inputs
         let env = ExecutorEnv::builder()
             // Pre-state
-            .write(&pre_state.len())
+            .write(&pre_state_ssz_bytes.len())
             .unwrap()
-            .write_slice(&pre_state)
+            .write_slice(&pre_state_ssz_bytes)
             // Operation input
             .write(&input)
             .unwrap()
@@ -132,6 +132,7 @@ fn main() {
 
         // Extract the receipt.
         let receipt = prove_info.receipt;
+        let new_state_root = receipt.journal.decode::<tree_hash::Hash256>().unwrap();
 
         info!("Seal size: {:#?}", receipt.seal_size());
         info!("Receipt: {:#?}", receipt);
@@ -141,10 +142,32 @@ fn main() {
         );
 
         receipt.verify(CONSENSUS_STF_ID).unwrap();
-        info!("Verfication complete");
+        info!("Verfication successful. Proof is valid.");
+
+        let post_state_opt: Option<BeaconState> = {
+            if case_dir.join("post.ssz_snappy").exists() {
+                let ssz_bytes: Vec<u8> = ssz_from_file(&case_dir.join("post.ssz_snappy"));
+                Some(from_ssz_bytes(&ssz_bytes).unwrap())
+            } else {
+                None
+            }
+        };
+
+        // Match `post_state_opt`: some test cases should not mutate beacon state.
+        match post_state_opt {
+            Some(post_state) => {
+                assert_eq!(new_state_root, post_state.tree_hash_root());
+                info!("Execution is correct! State mutated.");
+            }
+            None => {
+                let pre_state: BeaconState = from_ssz_bytes(&pre_state_ssz_bytes).unwrap();
+                assert_eq!(new_state_root, pre_state.tree_hash_root());
+                info!("Execution is correct! State should not be mutated.");
+            }
+        }
+
+        info!("State root matches expected root.");
 
         info!("----- Cycle Tracker End -----");
-
-        info!("{}", "-".repeat(50));
     }
 }
