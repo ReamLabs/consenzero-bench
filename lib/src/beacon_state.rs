@@ -2,11 +2,17 @@ use alloy_primitives::B256;
 use serde::{Deserialize, Serialize};
 use ssz_derive::{Decode, Encode};
 use ssz_types::{
-    typenum::{U134217728, U16777216, U2048, U262144, U4, U536870912, U65536, U8192},
+    typenum::{U134217728, U16777216, U2048, U262144, U4, U65536, U8192},
     BitVector, FixedVector, VariableList,
 };
 use std::sync::Arc;
 use tree_hash_derive::TreeHash;
+
+#[cfg(not(feature="zkvm"))]
+use ssz_types::typenum::U1099511627776;
+
+#[cfg(feature="zkvm")]
+use ssz_types::typenum::U536870912;
 
 use ream_consensus::{
     attestation::Attestation,
@@ -33,7 +39,7 @@ use ream_consensus::{
 };
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize, Encode, Decode, TreeHash)]
-pub struct BeaconState {
+pub struct TinyBeaconState {
     // Versioning
     pub genesis_time: u64,
     pub genesis_validators_root: B256,
@@ -53,9 +59,16 @@ pub struct BeaconState {
     pub eth1_deposit_index: u64,
 
     // Registry
+    #[cfg(not(feature="zkvm"))]
+    pub validators: VariableList<Validator, U1099511627776>,
+    #[cfg(not(feature="zkvm"))]
+    pub balances: VariableList<u64, U1099511627776>,
+
     // Using U536870912 (2^29) because risc0 guest fails for U4294967296 (2^32) and above,
     // and U2147483648 (2^31) and U1073741824 (2^30) fails to merkleize
+    #[cfg(feature="zkvm")]
     pub validators: VariableList<Validator, U536870912>,
+    #[cfg(feature="zkvm")]
     pub balances: VariableList<u64, U536870912>,
 
     // Randomness
@@ -64,8 +77,15 @@ pub struct BeaconState {
     // Slashings
     pub slashings: FixedVector<u64, U8192>,
 
-    // // Participation
+    // Participation
+    #[cfg(not(feature="zkvm"))]
+    pub previous_epoch_participation: VariableList<u8, U1099511627776>,
+    #[cfg(not(feature="zkvm"))]
+    pub current_epoch_participation: VariableList<u8, U1099511627776>,
+
+    #[cfg(feature="zkvm")]
     pub previous_epoch_participation: VariableList<u8, U536870912>,
+    #[cfg(feature="zkvm")]
     pub current_epoch_participation: VariableList<u8, U536870912>,
 
     // Finality
@@ -74,7 +94,10 @@ pub struct BeaconState {
     pub current_justified_checkpoint: Checkpoint,
     pub finalized_checkpoint: Checkpoint,
 
-    // // Inactivity
+    // Inactivity
+    #[cfg(not(feature="zkvm"))]
+    pub inactivity_scores: VariableList<u64, U1099511627776>,
+    #[cfg(feature="zkvm")]
     pub inactivity_scores: VariableList<u64, U536870912>,
 
     // Sync
@@ -103,7 +126,7 @@ pub struct BeaconState {
     pub pending_consolidations: VariableList<PendingConsolidation, U262144>,
 }
 
-impl BeaconState {
+impl TinyBeaconState {
     pub fn process_attestation(self, attestation: &Attestation) -> anyhow::Result<()> {
         ReamBeaconState::process_attestation(&mut self.into(), attestation)
     }
@@ -153,9 +176,9 @@ impl BeaconState {
     }
 }
 
-impl From<ReamBeaconState> for BeaconState {
+impl From<ReamBeaconState> for TinyBeaconState {
     fn from(state: ReamBeaconState) -> Self {
-        BeaconState {
+        TinyBeaconState {
             // Versioning
             genesis_time: state.genesis_time,
             genesis_validators_root: state.genesis_validators_root,
@@ -175,8 +198,14 @@ impl From<ReamBeaconState> for BeaconState {
             eth1_deposit_index: state.eth1_deposit_index,
 
             // Registry
-            validators: VariableList::<Validator, U536870912>::new(state.validators.to_vec())
-                .unwrap(),
+            #[cfg(not(feature="zkvm"))]
+            validators: VariableList::<Validator, U1099511627776>::new(state.validators.to_vec()).unwrap(),
+            #[cfg(not(feature="zkvm"))]
+            balances: VariableList::<u64, U1099511627776>::new(state.balances.to_vec()).unwrap(),
+
+            #[cfg(feature="zkvm")]
+            validators: VariableList::<Validator, U536870912>::new(state.validators.to_vec()).unwrap(),
+            #[cfg(feature="zkvm")]
             balances: VariableList::<u64, U536870912>::new(state.balances.to_vec()).unwrap(),
 
             // Randomness
@@ -186,10 +215,23 @@ impl From<ReamBeaconState> for BeaconState {
             slashings: state.slashings,
 
             // // Participation
+            #[cfg(not(feature="zkvm"))]
+            previous_epoch_participation: VariableList::<u8, U1099511627776>::new(
+                state.previous_epoch_participation.to_vec(),
+            )
+            .unwrap(),
+            #[cfg(not(feature="zkvm"))]
+            current_epoch_participation: VariableList::<u8, U1099511627776>::new(
+                state.current_epoch_participation.to_vec(),
+            )
+            .unwrap(),
+
+            #[cfg(feature="zkvm")]
             previous_epoch_participation: VariableList::<u8, U536870912>::new(
                 state.previous_epoch_participation.to_vec(),
             )
             .unwrap(),
+            #[cfg(feature="zkvm")]
             current_epoch_participation: VariableList::<u8, U536870912>::new(
                 state.current_epoch_participation.to_vec(),
             )
@@ -202,6 +244,12 @@ impl From<ReamBeaconState> for BeaconState {
             finalized_checkpoint: state.finalized_checkpoint,
 
             // // Inactivity
+            #[cfg(not(feature="zkvm"))]
+            inactivity_scores: VariableList::<u64, U1099511627776>::new(
+                state.inactivity_scores.to_vec(),
+            )
+            .unwrap(),
+            #[cfg(feature="zkvm")]
             inactivity_scores: VariableList::<u64, U536870912>::new(
                 state.inactivity_scores.to_vec(),
             )
@@ -235,8 +283,8 @@ impl From<ReamBeaconState> for BeaconState {
     }
 }
 
-impl From<BeaconState> for ReamBeaconState {
-    fn from(state: BeaconState) -> Self {
+impl From<TinyBeaconState> for ReamBeaconState {
+    fn from(state: TinyBeaconState) -> Self {
         ReamBeaconState {
             // Versioning
             genesis_time: state.genesis_time,

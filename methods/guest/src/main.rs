@@ -16,7 +16,7 @@ use ream_consensus::{
 };
 use ream_lib::{
     input::OperationInput,
-    beacon_state::BeaconState as TinyBeaconState,
+    beacon_state::TinyBeaconState,
     ssz::to_ssz,
 };
 
