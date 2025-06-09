@@ -17,12 +17,9 @@ edition = "2024"
 ethereum_ssz = "0.9"
 ream-consensus = { git = "https://github.com/ReamLabs/ream", package = "ream-consensus" }
 tracing = "0.1"
-# tree_hash = "0.10"
-# tree_hash_derive = "0.10"
-tree_hash = { path = "../tree_hash/tree_hash" }
-tree_hash_derive = { path = "../tree_hash/tree_hash_derive" }
+tree_hash = "0.10"
+tree_hash_derive = "0.10"
 
 [patch.crates-io]
 ethereum_hashing = { git = "https://github.com/ReamLabs/ethereum_hashing" }
-tree_hash = { path = "../tree_hash/tree_hash" }
-tree_hash_derive = { path = "../tree_hash/tree_hash_derive" }
+ssz_types = { git = "https://github.com/ReamLabs/ssz_types", branch = "magic-extended-list" } # Extends 2^29 to 2^40 list root

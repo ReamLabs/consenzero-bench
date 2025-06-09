@@ -1,9 +1,7 @@
 use clap::Parser;
+use ream_lib::{file::ssz_from_file, input::OperationInput};
 use risc0_zkvm::{default_prover, ExecutorEnv, ProverOpts};
 use tracing::{error, info};
-
-use ream_consensus::electra::beacon_state::BeaconState as ReamBeaconState;
-use ream_lib::{file::ssz_from_file, input::OperationInput};
 
 mod cli;
 use cli::operation::OperationName;

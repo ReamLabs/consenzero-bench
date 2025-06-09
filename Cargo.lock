@@ -3475,9 +3475,9 @@ dependencies = [
 [[package]]
 name = "ssz_types"
 version = "0.11.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "75b55bedc9a18ed2860a46d6beb4f4082416ee1d60be0cc364cebdcdddc7afd4"
+source = "git+https://github.com/ReamLabs/ssz_types?branch=magic-extended-list#846f16039c94c43e4cd2060c7479e27d67b73280"
 dependencies = [
+ "ethereum_hashing",
  "ethereum_serde_utils",
  "ethereum_ssz",
  "itertools 0.13.0",
@@ -3887,6 +3887,8 @@ dependencies = [
 [[package]]
 name = "tree_hash"
 version = "0.10.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ee44f4cef85f88b4dea21c0b1f58320bdf35715cf56d840969487cff00613321"
 dependencies = [
  "alloy-primitives",
  "ethereum_hashing",
@@ -3898,6 +3900,8 @@ dependencies = [
 [[package]]
 name = "tree_hash_derive"
 version = "0.10.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0bee2ea1551f90040ab0e34b6fb7f2fa3bad8acc925837ac654f2c78a13e3089"
 dependencies = [
  "darling",
  "proc-macro2",
