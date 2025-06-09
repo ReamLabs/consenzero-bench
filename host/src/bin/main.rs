@@ -118,19 +118,23 @@ fn main() {
             .build()
             .unwrap();
 
-        // Execute the program
+        //
+        // Prover setup & proving
+        //
+
         let prover = default_prover();
         let opts = ProverOpts::succinct();
 
-        // Proof information by proving the specified ELF binary.
-        // This struct contains the receipt along with statistics about execution of the guest
         let prove_info = prover
             .prove_with_opts(env, CONSENSUS_STF_ELF, &opts)
             .unwrap();
 
         info!("Proving complete");
 
-        // Extract the receipt.
+        //
+        // Proof verification
+        //
+
         let receipt = prove_info.receipt;
         let new_state_root = receipt.journal.decode::<tree_hash::Hash256>().unwrap();
 
@@ -144,6 +148,10 @@ fn main() {
         receipt.verify(CONSENSUS_STF_ID).unwrap();
         info!("Verfication successful. Proof is valid.");
 
+        //
+        // State root verification
+        //
+
         let post_state_opt: Option<BeaconState> = {
             if case_dir.join("post.ssz_snappy").exists() {
                 let ssz_bytes: Vec<u8> = ssz_from_file(&case_dir.join("post.ssz_snappy"));
@@ -153,20 +161,17 @@ fn main() {
             }
         };
 
-        // Match `post_state_opt`: some test cases should not mutate beacon state.
         match post_state_opt {
             Some(post_state) => {
                 assert_eq!(new_state_root, post_state.tree_hash_root());
-                info!("Execution is correct! State mutated.");
+                info!("Execution is correct! State mutated and the roots match.");
             }
             None => {
                 let pre_state: BeaconState = from_ssz_bytes(&pre_state_ssz_bytes).unwrap();
                 assert_eq!(new_state_root, pre_state.tree_hash_root());
-                info!("Execution is correct! State should not be mutated.");
+                info!("Execution is correct! State should not be mutated and the roots match.");
             }
         }
-
-        info!("State root matches expected root.");
 
         info!("----- Cycle Tracker End -----");
     }
