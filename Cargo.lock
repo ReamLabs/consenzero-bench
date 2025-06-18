@@ -1363,7 +1363,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cea14ef9355e3beab063703aa9dab15afd25f0667c341310c1e5274bb1d0da18"
 dependencies = [
  "libc",
- "windows-sys 0.59.0",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -2584,7 +2584,7 @@ dependencies = [
  "once_cell",
  "socket2",
  "tracing",
- "windows-sys 0.59.0",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -2681,7 +2681,7 @@ dependencies = [
 [[package]]
 name = "ream-bls"
 version = "0.1.0"
-source = "git+https://github.com/ReamLabs/ream#c71d4ef60fb4422059f142187d89d786db0a75a4"
+source = "git+https://github.com/ReamLabs/ream.git#2759da1c2746bfbdeaad763fcc362c6236d7f43f"
 dependencies = [
  "alloy-primitives",
  "anyhow",
@@ -2700,7 +2700,7 @@ dependencies = [
 [[package]]
 name = "ream-consensus"
 version = "0.1.0"
-source = "git+https://github.com/ReamLabs/ream#c71d4ef60fb4422059f142187d89d786db0a75a4"
+source = "git+https://github.com/ReamLabs/ream.git#2759da1c2746bfbdeaad763fcc362c6236d7f43f"
 dependencies = [
  "alloy-consensus",
  "alloy-primitives",
@@ -2744,7 +2744,7 @@ dependencies = [
 [[package]]
 name = "ream-merkle"
 version = "0.1.0"
-source = "git+https://github.com/ReamLabs/ream#c71d4ef60fb4422059f142187d89d786db0a75a4"
+source = "git+https://github.com/ReamLabs/ream.git#2759da1c2746bfbdeaad763fcc362c6236d7f43f"
 dependencies = [
  "alloy-primitives",
  "anyhow",
@@ -3185,7 +3185,7 @@ dependencies = [
  "errno",
  "libc",
  "linux-raw-sys",
- "windows-sys 0.59.0",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -3475,9 +3475,9 @@ dependencies = [
 [[package]]
 name = "ssz_types"
 version = "0.11.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "75b55bedc9a18ed2860a46d6beb4f4082416ee1d60be0cc364cebdcdddc7afd4"
+source = "git+https://github.com/ReamLabs/ssz_types?branch=magic-extended-list#846f16039c94c43e4cd2060c7479e27d67b73280"
 dependencies = [
+ "ethereum_hashing",
  "ethereum_serde_utils",
  "ethereum_ssz",
  "itertools 0.13.0",
@@ -3602,7 +3602,7 @@ dependencies = [
  "getrandom 0.3.3",
  "once_cell",
  "rustix",
- "windows-sys 0.59.0",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -3887,6 +3887,8 @@ dependencies = [
 [[package]]
 name = "tree_hash"
 version = "0.10.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ee44f4cef85f88b4dea21c0b1f58320bdf35715cf56d840969487cff00613321"
 dependencies = [
  "alloy-primitives",
  "ethereum_hashing",
@@ -3898,6 +3900,8 @@ dependencies = [
 [[package]]
 name = "tree_hash_derive"
 version = "0.10.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0bee2ea1551f90040ab0e34b6fb7f2fa3bad8acc925837ac654f2c78a13e3089"
 dependencies = [
  "darling",
  "proc-macro2",

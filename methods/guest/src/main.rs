@@ -7,6 +7,7 @@ use ream_consensus::{
     bls_to_execution_change::SignedBLSToExecutionChange,
     electra::{
         beacon_block::BeaconBlock,
+        beacon_state::BeaconState,
         execution_payload::ExecutionPayload,
     },
     deposit::Deposit,
@@ -16,13 +17,12 @@ use ream_consensus::{
 };
 use ream_lib::{
     input::OperationInput,
-    beacon_state::BeaconState as TinyBeaconState,
-    ssz::to_ssz,
+    ssz::from_ssz_bytes,
 };
 
 fn deserialize<T: ssz::Decode>(ssz_bytes: &[u8]) -> T {
     eprintln!("{}-{}:{}: {}", "deserialize", std::any::type_name::<T>(), "start", env::cycle_count());
-    let deserialized = to_ssz(&ssz_bytes).unwrap();
+    let deserialized = from_ssz_bytes(&ssz_bytes).unwrap();
     eprintln!("{}-{}:{}: {}", "deserialize", std::any::type_name::<T>(), "end", env::cycle_count());
 
     deserialized
@@ -37,8 +37,7 @@ fn main() {
     env::read_slice(&mut pre_state_ssz_bytes);
     eprintln!("{}:{}: {}", "read-pre-state-ssz", "end", env::cycle_count());
 
-    // TODO: This is where the guest fails. Use TinyBeaconState (2^29 instead of 2^40 lists)
-    let pre_state: TinyBeaconState = deserialize(&pre_state_ssz_bytes);
+    let mut state: BeaconState = deserialize(&pre_state_ssz_bytes);
 
     eprintln!("{}:{}: {}", "read-operation-input", "start", env::cycle_count());
     let input: OperationInput = env::read();
@@ -52,44 +51,44 @@ fn main() {
     match input {
         OperationInput::Attestation(ssz_bytes) => {
             let attestation: Attestation = deserialize(&ssz_bytes);
-            let _ = pre_state.clone().process_attestation(&attestation);
+            let _ = state.process_attestation(&attestation);
         }
         OperationInput::AttesterSlashing(ssz_bytes) => {
             let attester_slashing: AttesterSlashing = deserialize(&ssz_bytes);
-            let _ = pre_state.clone().process_attester_slashing(&attester_slashing);
+            let _ = state.process_attester_slashing(&attester_slashing);
         }
         OperationInput::BeaconBlock(ssz_bytes) => {
             let block: BeaconBlock = deserialize(&ssz_bytes);
-            let _ = pre_state.clone().process_block_header(&block);
+            let _ = state.process_block_header(&block);
         }
         OperationInput::SignedBLSToExecutionChange(ssz_bytes) => {
             let bls_change: SignedBLSToExecutionChange = deserialize(&ssz_bytes);
-            let _ = pre_state.clone().process_bls_to_execution_change(&bls_change);
+            let _ = state.process_bls_to_execution_change(&bls_change);
         }
         OperationInput::Deposit(ssz_bytes) => {
             let deposit: Deposit = deserialize(&ssz_bytes);
-            let _ = pre_state.clone().process_deposit(&deposit);
+            let _ = state.process_deposit(&deposit);
         }
         OperationInput::BeaconBlockBody(_ssz_bytes) => {
             panic!("Not implemented");
             // let block_body: BeaconBlockBody = deserialize(&ssz_bytes);
-            // let _ = pre_state.clone().process_execution_payload(&block_body);
+            // let _ = state.process_execution_payload(&block_body);
         }
         OperationInput::ProposerSlashing(ssz_bytes) => {
             let proposer_slashing: ProposerSlashing = deserialize(&ssz_bytes);
-            let _ = pre_state.clone().process_proposer_slashing(&proposer_slashing);
+            let _ = state.process_proposer_slashing(&proposer_slashing);
         }
         OperationInput::SyncAggregate(ssz_bytes) => {
             let sync_aggregate: SyncAggregate = deserialize(&ssz_bytes);
-            let _ = pre_state.clone().process_sync_aggregate(&sync_aggregate);
+            let _ = state.process_sync_aggregate(&sync_aggregate);
         }
         OperationInput::SignedVoluntaryExit(ssz_bytes) => {
             let voluntary_exit: SignedVoluntaryExit = deserialize(&ssz_bytes);
-            let _ = pre_state.clone().process_voluntary_exit(&voluntary_exit);
+            let _ = state.process_voluntary_exit(&voluntary_exit);
         }
         OperationInput::ExecutionPayload(ssz_bytes) => {
             let execution_payload: ExecutionPayload = deserialize(&ssz_bytes);
-            let _ = pre_state.clone().process_withdrawals(&execution_payload);
+            let _ = state.process_withdrawals(&execution_payload);
         }
     }
 
@@ -97,7 +96,7 @@ fn main() {
 
     // Merkleize the processed state
     eprintln!("{}:{}: {}", "merkleize-operation", "start", env::cycle_count());
-    let state_root = pre_state.tree_hash_root();
+    let state_root = state.tree_hash_root();
     eprintln!("{}:{}: {}", "merkleize-operation", "end", env::cycle_count());
 
     eprintln!("{}:{}: {}", "commit", "start", env::cycle_count());
