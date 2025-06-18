@@ -285,5 +285,5 @@ fn assert_state_root_matches_recompute(
     println!("new_state_root: {}", new_state_root);
 
     assert_eq!(*new_state_root, recomputed_state_root);
-    info!("Execution is correct! State roots match.");
+    info!("Execution is correct! State roots match host's recomputed state root.");
 }

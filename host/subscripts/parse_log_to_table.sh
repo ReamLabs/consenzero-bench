@@ -42,11 +42,11 @@ BEGIN {
     read_pre_state_ssz_end = $NF;
 }
 
-/deserialize-ream_lib::beacon_state::BeaconState:start:/ {
+/deserialize-ream_consensus::electra::beacon_state::BeaconState:start:/ {
     deserialize_pre_state_ssz_start = $NF;
 }
 
-/deserialize-ream_lib::beacon_state::BeaconState:end:/ {
+/deserialize-ream_consensus::electra::beacon_state::BeaconState:end:/ {
     deserialize_pre_state_ssz_end = $NF;
 }
 
