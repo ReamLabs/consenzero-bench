@@ -16,7 +16,7 @@ use ream_consensus::{
     voluntary_exit::SignedVoluntaryExit,
 };
 use ream_lib::{
-    input::OperationInput,
+    input::{OperationInput, EpochProcessingType},
     ssz::from_ssz_bytes,
 };
 
@@ -38,7 +38,6 @@ fn main() {
     eprintln!("{}:{}: {}", "read-pre-state-ssz", "end", env::cycle_count());
 
     let mut state: BeaconState = deserialize(&pre_state_ssz_bytes);
-
     eprintln!("{}:{}: {}", "read-operation-input", "start", env::cycle_count());
     let input: OperationInput = env::read();
     eprintln!("{}:{}: {}", "read-operation-input", "end", env::cycle_count());
@@ -89,6 +88,52 @@ fn main() {
         OperationInput::ExecutionPayload(ssz_bytes) => {
             let execution_payload: ExecutionPayload = deserialize(&ssz_bytes);
             let _ = state.process_withdrawals(&execution_payload);
+        }
+        OperationInput::EpochProcessing(epoch_type) => {
+            match epoch_type {
+                EpochProcessingType::JustificationAndFinalization => {
+                    let _ = state.process_justification_and_finalization();
+                }
+                EpochProcessingType::InactivityUpdates => {
+                    let _ = state.process_inactivity_updates();
+                }
+                EpochProcessingType::RewardsAndPenalties => {
+                    let _ = state.process_rewards_and_penalties();
+                }
+                EpochProcessingType::RegistryUpdates => {
+                    let _ = state.process_registry_updates();
+                }
+                EpochProcessingType::Slashings => {
+                    let _ = state.process_slashings();
+                }
+                EpochProcessingType::Eth1DataReset => {
+                    let _ = state.process_eth1_data_reset();
+                }
+                EpochProcessingType::PendingDeposits => {
+                    let _ = state.process_pending_deposits();
+                }
+                EpochProcessingType::PendingConsolidations => {
+                    let _ = state.process_pending_consolidations();
+                }
+                EpochProcessingType::EffectiveBalanceUpdates => {
+                    let _ = state.process_effective_balance_updates();
+                }
+                EpochProcessingType::SlashingsReset => {
+                    let _ = state.process_slashings_reset();
+                }
+                EpochProcessingType::RandaoMixesReset => {
+                    let _ = state.process_randao_mixes_reset();
+                }
+                EpochProcessingType::HistoricalSummariesUpdate => {
+                    let _ = state.process_historical_summaries_update();
+                }
+                EpochProcessingType::ParticipationFlagUpdates => {
+                    let _ = state.process_participation_flag_updates();
+                }
+                EpochProcessingType::SyncCommitteeUpdates => {
+                    let _ = state.process_sync_committee_updates();
+                }
+            }
         }
     }
 

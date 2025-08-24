@@ -13,7 +13,7 @@ derive_more = { version = "2.0.1", features = ["full"] }
 dotenv = "0.15.0"
 hex = "0.4.3"
 methods = { path = "../methods" }
-risc0-zkvm = { version = "2.0.1" }
+risc0-zkvm = { version = "3.0.1" }
 serde = { version = "1.0", default-features = false, features = ["derive"] }
 serde_json = { version = "1.0.139", default-features = false, features = ["alloc"] }
 tracing = { workspace = true }

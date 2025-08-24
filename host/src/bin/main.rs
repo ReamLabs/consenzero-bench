@@ -16,7 +16,7 @@ use ream_consensus::{
     sync_aggregate::SyncAggregate,
     voluntary_exit::SignedVoluntaryExit,
 };
-use ream_lib::{file::ssz_from_file, input::OperationInput, ssz::from_ssz_bytes};
+use ream_lib::{file::ssz_from_file, input::{OperationInput, EpochProcessingType}, ssz::from_ssz_bytes};
 
 mod cli;
 use cli::{fork::Fork, operation::OperationName};
@@ -37,11 +37,11 @@ struct Args {
     operation: cli::operation::OperationArgs,
 
     /// Verify the correctness of the state root by comparing against consensus-spec-tests' post_state
-    #[clap(long, default_value_t = false)]
+    #[clap(long, default_value_t = true)]
     compare_specs: bool,
 
     /// Verify the correctness of the state root by recomputing on the host
-    #[clap(long, default_value_t = true)]
+    #[clap(long, default_value_t = false)]
     compare_recompute: bool,
 
     #[clap(long)]
@@ -112,6 +112,7 @@ fn main() {
 
         if compare_specs {
             info!("Comparing the root against consensus-spec-tests post_state");
+            println!("new_state_root: {}", new_state_root);
             assert_state_root_matches_specs(&new_state_root, &pre_state_ssz_bytes, &case_dir);
         }
 
@@ -148,29 +149,35 @@ fn parse_args() -> (Fork, OperationName, Vec<String>, bool, bool) {
 }
 
 fn prepare_input(case_dir: &PathBuf, operation_name: &OperationName) -> OperationInput {
-    let input_path = &case_dir.join(format!("{}.ssz_snappy", operation_name.to_input_name()));
+    if operation_name.is_epoch_processing() {
+        // For epoch processing, we don't need input files, just the processing type
+        OperationInput::EpochProcessing(operation_name.to_epoch_processing_type().unwrap())
+    } else {
+        let input_path = &case_dir.join(format!("{}.ssz_snappy", operation_name.to_input_name()));
 
-    match operation_name {
-        OperationName::Attestation => OperationInput::Attestation(ssz_from_file(input_path)),
-        OperationName::AttesterSlashing => {
-            OperationInput::AttesterSlashing(ssz_from_file(input_path))
+        match operation_name {
+            OperationName::Attestation => OperationInput::Attestation(ssz_from_file(input_path)),
+            OperationName::AttesterSlashing => {
+                OperationInput::AttesterSlashing(ssz_from_file(input_path))
+            }
+            OperationName::BlockHeader => OperationInput::BeaconBlock(ssz_from_file(input_path)),
+            OperationName::BLSToExecutionChange => {
+                OperationInput::SignedBLSToExecutionChange(ssz_from_file(input_path))
+            }
+            OperationName::Deposit => OperationInput::Deposit(ssz_from_file(input_path)),
+            OperationName::ExecutionPayload => {
+                OperationInput::BeaconBlockBody(ssz_from_file(input_path))
+            }
+            OperationName::ProposerSlashing => {
+                OperationInput::ProposerSlashing(ssz_from_file(input_path))
+            }
+            OperationName::SyncAggregate => OperationInput::SyncAggregate(ssz_from_file(input_path)),
+            OperationName::VoluntaryExit => {
+                OperationInput::SignedVoluntaryExit(ssz_from_file(input_path))
+            }
+            OperationName::Withdrawals => OperationInput::ExecutionPayload(ssz_from_file(input_path)),
+            _ => unreachable!("Epoch processing should be handled above"),
         }
-        OperationName::BlockHeader => OperationInput::BeaconBlock(ssz_from_file(input_path)),
-        OperationName::BLSToExecutionChange => {
-            OperationInput::SignedBLSToExecutionChange(ssz_from_file(input_path))
-        }
-        OperationName::Deposit => OperationInput::Deposit(ssz_from_file(input_path)),
-        OperationName::ExecutionPayload => {
-            OperationInput::BeaconBlockBody(ssz_from_file(input_path))
-        }
-        OperationName::ProposerSlashing => {
-            OperationInput::ProposerSlashing(ssz_from_file(input_path))
-        }
-        OperationName::SyncAggregate => OperationInput::SyncAggregate(ssz_from_file(input_path)),
-        OperationName::VoluntaryExit => {
-            OperationInput::SignedVoluntaryExit(ssz_from_file(input_path))
-        }
-        OperationName::Withdrawals => OperationInput::ExecutionPayload(ssz_from_file(input_path)),
     }
 }
 
@@ -186,11 +193,21 @@ fn load_test_cases(fork: &Fork, operation_name: &OperationName) -> (PathBuf, Vec
         std::process::exit(1);
     }
 
-    let base_dir = test_case_dir
-        .join(format!("{}", fork))
-        .join("operations")
-        .join(format!("{}", operation_name))
-        .join("pyspec_tests");
+    let base_dir = if operation_name.is_epoch_processing() {
+        // Epoch processing tests are in epoch_processing directory
+        test_case_dir
+            .join(format!("{}", fork))
+            .join("epoch_processing")
+            .join(format!("{}", operation_name))
+            .join("pyspec_tests")
+    } else {
+        // Regular operations are in operations directory
+        test_case_dir
+            .join(format!("{}", fork))
+            .join("operations")
+            .join(format!("{}", operation_name))
+            .join("pyspec_tests")
+    };
 
     let test_cases = ream_lib::file::get_test_cases(&base_dir);
 
@@ -276,6 +293,52 @@ fn assert_state_root_matches_recompute(
         OperationInput::ExecutionPayload(ssz_bytes) => {
             let execution_payload: ExecutionPayload = from_ssz_bytes(&ssz_bytes).unwrap();
             let _ = state.process_withdrawals(&execution_payload);
+        }
+        OperationInput::EpochProcessing(epoch_type) => {
+            match epoch_type {
+                EpochProcessingType::JustificationAndFinalization => {
+                    let _ = state.process_justification_and_finalization();
+                }
+                EpochProcessingType::InactivityUpdates => {
+                    let _ = state.process_inactivity_updates();
+                }
+                EpochProcessingType::RewardsAndPenalties => {
+                    let _ = state.process_rewards_and_penalties();
+                }
+                EpochProcessingType::RegistryUpdates => {
+                    let _ = state.process_registry_updates();
+                }
+                EpochProcessingType::Slashings => {
+                    let _ = state.process_slashings();
+                }
+                EpochProcessingType::Eth1DataReset => {
+                    let _ = state.process_eth1_data_reset();
+                }
+                EpochProcessingType::PendingDeposits => {
+                    let _ = state.process_pending_deposits();
+                }
+                EpochProcessingType::PendingConsolidations => {
+                    let _ = state.process_pending_consolidations();
+                }
+                EpochProcessingType::EffectiveBalanceUpdates => {
+                    let _ = state.process_effective_balance_updates();
+                }
+                EpochProcessingType::SlashingsReset => {
+                    let _ = state.process_slashings_reset();
+                }
+                EpochProcessingType::RandaoMixesReset => {
+                    let _ = state.process_randao_mixes_reset();
+                }
+                EpochProcessingType::HistoricalSummariesUpdate => {
+                    let _ = state.process_historical_summaries_update();
+                }
+                EpochProcessingType::ParticipationFlagUpdates => {
+                    let _ = state.process_participation_flag_updates();
+                }
+                EpochProcessingType::SyncCommitteeUpdates => {
+                    let _ = state.process_sync_committee_updates();
+                }
+            }
         }
     }
 

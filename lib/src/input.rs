@@ -12,4 +12,23 @@ pub enum OperationInput {
     SyncAggregate(Vec<u8>),
     SignedVoluntaryExit(Vec<u8>),
     ExecutionPayload(Vec<u8>),
+    EpochProcessing(EpochProcessingType),
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub enum EpochProcessingType {
+    JustificationAndFinalization,
+    InactivityUpdates,
+    RewardsAndPenalties,
+    RegistryUpdates,
+    Slashings,
+    Eth1DataReset,
+    PendingDeposits,
+    PendingConsolidations,
+    EffectiveBalanceUpdates,
+    SlashingsReset,
+    RandaoMixesReset,
+    HistoricalSummariesUpdate,
+    ParticipationFlagUpdates,
+    SyncCommitteeUpdates,
 }
