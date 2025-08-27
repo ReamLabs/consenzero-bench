@@ -8,8 +8,8 @@ edition = "2021"
 risc0-zkvm = { version = "3.0.1", default-features = false, features = ['std'] }
 
 # Ream dependencies
-ethereum_ssz = {workspace = true}
-ream-consensus = {workspace=true}
+ethereum_ssz = { workspace = true }
+ream-consensus = { workspace=true }
 ream-lib = { path = "../../lib" }
 tree_hash = { workspace = true }
 tree_hash_derive = { workspace = true }
