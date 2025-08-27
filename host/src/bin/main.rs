@@ -112,7 +112,7 @@ fn main() {
 
         if compare_specs {
             info!("Comparing the root against consensus-spec-tests post_state");
-            println!("new_state_root: {}", new_state_root);
+            info!("new_state_root: {}", new_state_root);
             assert_state_root_matches_specs(&new_state_root, &pre_state_ssz_bytes, &case_dir);
         }
 
