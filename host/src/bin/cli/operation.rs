@@ -1,16 +1,29 @@
-use clap::{Parser, ValueEnum};
+use clap::{Parser, Subcommand, ValueEnum};
 use derive_more::Display;
-use ream_lib::input::EpochProcessingType;
+use ream_lib::input::{BlockOperationType, EpochOperationType};
+use std::path::PathBuf;
 
 #[derive(Debug, Clone, Parser)]
 pub struct OperationArgs {
-    #[clap(long, short)]
-    pub operation_name: OperationName,
+    #[clap(subcommand)]
+    pub operation: Operation,
+}
+
+#[derive(Debug, Clone, Subcommand)]
+pub enum Operation {
+    Block {
+        #[clap(value_enum)]
+        operation: BlockOperation,
+    },
+    Epoch {
+        #[clap(value_enum)]
+        operation: EpochOperation,
+    },
 }
 
 #[derive(ValueEnum, Debug, Clone, Display)]
 #[clap(rename_all = "snake_case")]
-pub enum OperationName {
+pub enum BlockOperation {
     #[display("attestation")]
     Attestation,
     #[display("attester_slashing")]
@@ -31,7 +44,11 @@ pub enum OperationName {
     VoluntaryExit,
     #[display("withdrawals")]
     Withdrawals,
-    // Epoch processing operations
+}
+
+#[derive(ValueEnum, Debug, Clone, Display)]
+#[clap(rename_all = "snake_case")]
+pub enum EpochOperation {
     #[display("justification_and_finalization")]
     JustificationAndFinalization,
     #[display("inactivity_updates")]
@@ -60,70 +77,130 @@ pub enum OperationName {
     ParticipationFlagUpdates,
 }
 
-impl OperationName {
-    pub fn to_input_name(&self) -> String {
+// Generic traits for operation handling
+pub trait OperationHandler {
+    fn prepare_input(&self, case_dir: &PathBuf) -> ream_lib::input::OperationInput;
+    fn load_test_cases(&self, fork: &crate::cli::fork::Fork) -> (PathBuf, Vec<String>);
+    fn get_operation_category(&self) -> &'static str;
+}
+
+// Block operation trait implementation
+impl OperationHandler for BlockOperation {
+    fn prepare_input(&self, case_dir: &PathBuf) -> ream_lib::input::OperationInput {
+        use ream_lib::{file::ssz_from_file, input::{OperationInput, BlockOperationWrapper}};
+        
+        let input_path = case_dir.join(format!("{}.ssz_snappy", self.get_input_filename()));
+        let ssz_bytes = ssz_from_file(&input_path);
+        
+        OperationInput::Block(BlockOperationWrapper {
+            operation_type: self.to_block_operation_type(),
+            ssz_bytes,
+        })
+    }
+
+    fn load_test_cases(&self, fork: &crate::cli::fork::Fork) -> (PathBuf, Vec<String>) {
+        let test_case_dir = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+            .join("mainnet")
+            .join("tests")
+            .join("mainnet");
+
+        let base_dir = test_case_dir
+            .join(format!("{}", fork))
+            .join(self.get_operation_category())
+            .join(self.to_string())
+            .join("pyspec_tests");
+
+        let test_cases = ream_lib::file::get_test_cases(&base_dir);
+        (base_dir, test_cases)
+    }
+
+    fn get_operation_category(&self) -> &'static str {
+        "operations"
+    }
+}
+
+// Epoch operation trait implementation
+impl OperationHandler for EpochOperation {
+    fn prepare_input(&self, _case_dir: &PathBuf) -> ream_lib::input::OperationInput {
+        use ream_lib::input::{OperationInput, EpochOperationWrapper};
+        
+        OperationInput::Epoch(EpochOperationWrapper {
+            operation_type: self.to_epoch_operation_type(),
+        })
+    }
+
+    fn load_test_cases(&self, fork: &crate::cli::fork::Fork) -> (PathBuf, Vec<String>) {
+        let test_case_dir = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+            .join("mainnet")
+            .join("tests")
+            .join("mainnet");
+
+        let base_dir = test_case_dir
+            .join(format!("{}", fork))
+            .join(self.get_operation_category())
+            .join(self.to_string())
+            .join("pyspec_tests");
+
+        let test_cases = ream_lib::file::get_test_cases(&base_dir);
+        (base_dir, test_cases)
+    }
+
+    fn get_operation_category(&self) -> &'static str {
+        "epoch_processing"
+    }
+}
+
+// Block operation specific methods
+impl BlockOperation {
+    fn get_input_filename(&self) -> &'static str {
         match self {
-            OperationName::Attestation => "attestation".to_string(),
-            OperationName::AttesterSlashing => "attester_slashing".to_string(),
-            OperationName::BlockHeader => "block".to_string(),
-            OperationName::BLSToExecutionChange => "address_change".to_string(),
-            OperationName::Deposit => "deposit".to_string(),
-            OperationName::ExecutionPayload => "body".to_string(),
-            OperationName::ProposerSlashing => "proposer_slashing".to_string(),
-            OperationName::SyncAggregate => "sync_aggregate".to_string(),
-            OperationName::VoluntaryExit => "voluntary_exit".to_string(),
-            OperationName::Withdrawals => "execution_payload".to_string(),
-            // Epoch processing operations don't need input files
-            OperationName::JustificationAndFinalization => "".to_string(),
-            OperationName::InactivityUpdates => "".to_string(),
-            OperationName::RewardsAndPenalties => "".to_string(),
-            OperationName::RegistryUpdates => "".to_string(),
-            OperationName::Slashings => "".to_string(),
-            OperationName::Eth1DataReset => "".to_string(),
-            OperationName::PendingDeposits => "".to_string(),
-            OperationName::PendingConsolidations => "".to_string(),
-            OperationName::EffectiveBalanceUpdates => "".to_string(),
-            OperationName::SlashingsReset => "".to_string(),
-            OperationName::RandaoMixesReset => "".to_string(),
-            OperationName::HistoricalSummariesUpdate => "".to_string(),
-            OperationName::ParticipationFlagUpdates => "".to_string(),
+            BlockOperation::Attestation => "attestation",
+            BlockOperation::AttesterSlashing => "attester_slashing",
+            BlockOperation::BlockHeader => "block",
+            BlockOperation::BLSToExecutionChange => "address_change",
+            BlockOperation::Deposit => "deposit",
+            BlockOperation::ExecutionPayload => "body",
+            BlockOperation::ProposerSlashing => "proposer_slashing",
+            BlockOperation::SyncAggregate => "sync_aggregate",
+            BlockOperation::VoluntaryExit => "voluntary_exit",
+            BlockOperation::Withdrawals => "execution_payload",
         }
     }
 
-    pub fn is_epoch_processing(&self) -> bool {
-        matches!(self,
-            OperationName::JustificationAndFinalization |
-            OperationName::InactivityUpdates |
-            OperationName::RewardsAndPenalties |
-            OperationName::RegistryUpdates |
-            OperationName::Slashings |
-            OperationName::Eth1DataReset |
-            OperationName::PendingDeposits |
-            OperationName::PendingConsolidations |
-            OperationName::EffectiveBalanceUpdates |
-            OperationName::SlashingsReset |
-            OperationName::RandaoMixesReset |
-            OperationName::HistoricalSummariesUpdate |
-            OperationName::ParticipationFlagUpdates 
-        )
-    }
-
-    pub fn to_epoch_processing_type(&self) -> Option<EpochProcessingType> {
+    fn to_block_operation_type(&self) -> BlockOperationType {
         match self {
-            OperationName::JustificationAndFinalization => Some(EpochProcessingType::JustificationAndFinalization),
-            OperationName::InactivityUpdates => Some(EpochProcessingType::InactivityUpdates),
-            OperationName::RewardsAndPenalties => Some(EpochProcessingType::RewardsAndPenalties),
-            OperationName::RegistryUpdates => Some(EpochProcessingType::RegistryUpdates),
-            OperationName::Slashings => Some(EpochProcessingType::Slashings),
-            OperationName::Eth1DataReset => Some(EpochProcessingType::Eth1DataReset),
-            OperationName::PendingDeposits => Some(EpochProcessingType::PendingDeposits),
-            OperationName::PendingConsolidations => Some(EpochProcessingType::PendingConsolidations),
-            OperationName::EffectiveBalanceUpdates => Some(EpochProcessingType::EffectiveBalanceUpdates),
-            OperationName::SlashingsReset => Some(EpochProcessingType::SlashingsReset),
-            OperationName::RandaoMixesReset => Some(EpochProcessingType::RandaoMixesReset),
-            OperationName::HistoricalSummariesUpdate => Some(EpochProcessingType::HistoricalSummariesUpdate),
-            OperationName::ParticipationFlagUpdates => Some(EpochProcessingType::ParticipationFlagUpdates),
-            _ => None,
+            BlockOperation::Attestation => BlockOperationType::Attestation,
+            BlockOperation::AttesterSlashing => BlockOperationType::AttesterSlashing,
+            BlockOperation::BlockHeader => BlockOperationType::BlockHeader,
+            BlockOperation::BLSToExecutionChange => BlockOperationType::BLSToExecutionChange,
+            BlockOperation::Deposit => BlockOperationType::Deposit,
+            BlockOperation::ExecutionPayload => BlockOperationType::ExecutionPayload,
+            BlockOperation::ProposerSlashing => BlockOperationType::ProposerSlashing,
+            BlockOperation::SyncAggregate => BlockOperationType::SyncAggregate,
+            BlockOperation::VoluntaryExit => BlockOperationType::VoluntaryExit,
+            BlockOperation::Withdrawals => BlockOperationType::Withdrawals,
         }
     }
 }
+
+// Epoch operation specific methods
+impl EpochOperation {
+    fn to_epoch_operation_type(&self) -> EpochOperationType {
+        match self {
+            EpochOperation::JustificationAndFinalization => EpochOperationType::JustificationAndFinalization,
+            EpochOperation::InactivityUpdates => EpochOperationType::InactivityUpdates,
+            EpochOperation::RewardsAndPenalties => EpochOperationType::RewardsAndPenalties,
+            EpochOperation::RegistryUpdates => EpochOperationType::RegistryUpdates,
+            EpochOperation::Slashings => EpochOperationType::Slashings,
+            EpochOperation::Eth1DataReset => EpochOperationType::Eth1DataReset,
+            EpochOperation::PendingDeposits => EpochOperationType::PendingDeposits,
+            EpochOperation::PendingConsolidations => EpochOperationType::PendingConsolidations,
+            EpochOperation::EffectiveBalanceUpdates => EpochOperationType::EffectiveBalanceUpdates,
+            EpochOperation::SlashingsReset => EpochOperationType::SlashingsReset,
+            EpochOperation::RandaoMixesReset => EpochOperationType::RandaoMixesReset,
+            EpochOperation::HistoricalSummariesUpdate => EpochOperationType::HistoricalSummariesUpdate,
+            EpochOperation::ParticipationFlagUpdates => EpochOperationType::ParticipationFlagUpdates,
+        }
+    }
+}
+
