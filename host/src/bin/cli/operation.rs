@@ -1,8 +1,13 @@
 use clap::{Parser, Subcommand, ValueEnum};
 use derive_more::Display;
-use ream_lib::input::{BlockOperationType, EpochOperationType};
+use ream_lib::{
+    file::ssz_from_file,
+    input::{
+        BlockOperationType, BlockOperationWrapper, EpochOperationType, EpochOperationWrapper,
+        OperationInput,
+    },
+};
 use std::path::PathBuf;
-
 #[derive(Debug, Clone, Parser)]
 pub struct OperationArgs {
     #[clap(subcommand)]
@@ -87,11 +92,9 @@ pub trait OperationHandler {
 // Block operation trait implementation
 impl OperationHandler for BlockOperation {
     fn prepare_input(&self, case_dir: &PathBuf) -> ream_lib::input::OperationInput {
-        use ream_lib::{file::ssz_from_file, input::{OperationInput, BlockOperationWrapper}};
-        
         let input_path = case_dir.join(format!("{}.ssz_snappy", self.get_input_filename()));
         let ssz_bytes = ssz_from_file(&input_path);
-        
+
         OperationInput::Block(BlockOperationWrapper {
             operation_type: self.to_block_operation_type(),
             ssz_bytes,
@@ -122,8 +125,6 @@ impl OperationHandler for BlockOperation {
 // Epoch operation trait implementation
 impl OperationHandler for EpochOperation {
     fn prepare_input(&self, _case_dir: &PathBuf) -> ream_lib::input::OperationInput {
-        use ream_lib::input::{OperationInput, EpochOperationWrapper};
-        
         OperationInput::Epoch(EpochOperationWrapper {
             operation_type: self.to_epoch_operation_type(),
         })
@@ -187,7 +188,9 @@ impl BlockOperation {
 impl EpochOperation {
     fn to_epoch_operation_type(&self) -> EpochOperationType {
         match self {
-            EpochOperation::JustificationAndFinalization => EpochOperationType::JustificationAndFinalization,
+            EpochOperation::JustificationAndFinalization => {
+                EpochOperationType::JustificationAndFinalization
+            }
             EpochOperation::InactivityUpdates => EpochOperationType::InactivityUpdates,
             EpochOperation::RewardsAndPenalties => EpochOperationType::RewardsAndPenalties,
             EpochOperation::RegistryUpdates => EpochOperationType::RegistryUpdates,
@@ -198,9 +201,12 @@ impl EpochOperation {
             EpochOperation::EffectiveBalanceUpdates => EpochOperationType::EffectiveBalanceUpdates,
             EpochOperation::SlashingsReset => EpochOperationType::SlashingsReset,
             EpochOperation::RandaoMixesReset => EpochOperationType::RandaoMixesReset,
-            EpochOperation::HistoricalSummariesUpdate => EpochOperationType::HistoricalSummariesUpdate,
-            EpochOperation::ParticipationFlagUpdates => EpochOperationType::ParticipationFlagUpdates,
+            EpochOperation::HistoricalSummariesUpdate => {
+                EpochOperationType::HistoricalSummariesUpdate
+            }
+            EpochOperation::ParticipationFlagUpdates => {
+                EpochOperationType::ParticipationFlagUpdates
+            }
         }
     }
 }
-

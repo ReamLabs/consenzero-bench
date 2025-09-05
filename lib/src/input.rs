@@ -1,6 +1,6 @@
-use serde::{Deserialize, Serialize};
 use ream_consensus::electra::beacon_state::BeaconState;
- 
+use serde::{Deserialize, Serialize};
+
 #[derive(Serialize, Deserialize, Debug)]
 pub enum OperationInput {
     Block(BlockOperationWrapper),
@@ -66,22 +66,26 @@ impl OperationInput {
 impl BlockOperationWrapper {
     pub fn process_operation(&self, state: &mut BeaconState) {
         use crate::ssz::from_ssz_bytes;
-        
+
         match self.operation_type {
             BlockOperationType::Attestation => {
-                let op: ream_consensus::attestation::Attestation = from_ssz_bytes(&self.ssz_bytes).unwrap();
+                let op: ream_consensus::attestation::Attestation =
+                    from_ssz_bytes(&self.ssz_bytes).unwrap();
                 let _ = state.process_attestation(&op);
             }
             BlockOperationType::AttesterSlashing => {
-                let op: ream_consensus::attester_slashing::AttesterSlashing = from_ssz_bytes(&self.ssz_bytes).unwrap();
+                let op: ream_consensus::attester_slashing::AttesterSlashing =
+                    from_ssz_bytes(&self.ssz_bytes).unwrap();
                 let _ = state.process_attester_slashing(&op);
             }
             BlockOperationType::BlockHeader => {
-                let op: ream_consensus::electra::beacon_block::BeaconBlock = from_ssz_bytes(&self.ssz_bytes).unwrap();
+                let op: ream_consensus::electra::beacon_block::BeaconBlock =
+                    from_ssz_bytes(&self.ssz_bytes).unwrap();
                 let _ = state.process_block_header(&op);
             }
             BlockOperationType::BLSToExecutionChange => {
-                let op: ream_consensus::bls_to_execution_change::SignedBLSToExecutionChange = from_ssz_bytes(&self.ssz_bytes).unwrap();
+                let op: ream_consensus::bls_to_execution_change::SignedBLSToExecutionChange =
+                    from_ssz_bytes(&self.ssz_bytes).unwrap();
                 let _ = state.process_bls_to_execution_change(&op);
             }
             BlockOperationType::Deposit => {
@@ -92,19 +96,23 @@ impl BlockOperationWrapper {
                 panic!("Not implemented");
             }
             BlockOperationType::ProposerSlashing => {
-                let op: ream_consensus::proposer_slashing::ProposerSlashing = from_ssz_bytes(&self.ssz_bytes).unwrap();
+                let op: ream_consensus::proposer_slashing::ProposerSlashing =
+                    from_ssz_bytes(&self.ssz_bytes).unwrap();
                 let _ = state.process_proposer_slashing(&op);
             }
             BlockOperationType::SyncAggregate => {
-                let op: ream_consensus::sync_aggregate::SyncAggregate = from_ssz_bytes(&self.ssz_bytes).unwrap();
+                let op: ream_consensus::sync_aggregate::SyncAggregate =
+                    from_ssz_bytes(&self.ssz_bytes).unwrap();
                 let _ = state.process_sync_aggregate(&op);
             }
             BlockOperationType::VoluntaryExit => {
-                let op: ream_consensus::voluntary_exit::SignedVoluntaryExit = from_ssz_bytes(&self.ssz_bytes).unwrap();
+                let op: ream_consensus::voluntary_exit::SignedVoluntaryExit =
+                    from_ssz_bytes(&self.ssz_bytes).unwrap();
                 let _ = state.process_voluntary_exit(&op);
             }
             BlockOperationType::Withdrawals => {
-                let op: ream_consensus::electra::execution_payload::ExecutionPayload = from_ssz_bytes(&self.ssz_bytes).unwrap();
+                let op: ream_consensus::electra::execution_payload::ExecutionPayload =
+                    from_ssz_bytes(&self.ssz_bytes).unwrap();
                 let _ = state.process_withdrawals(&op);
             }
         }
