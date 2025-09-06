@@ -83,7 +83,7 @@ pub enum EpochOperation {
 }
 
 // Generic traits for operation handling
-pub trait OperationHandler {
+pub trait OperationHandler: std::fmt::Display {
     fn prepare_input(&self, case_dir: &PathBuf) -> ream_lib::input::OperationInput;
     fn load_test_cases(&self, fork: &crate::cli::fork::Fork) -> (PathBuf, Vec<String>);
     fn get_operation_category(&self) -> &'static str;
@@ -96,7 +96,7 @@ impl OperationHandler for BlockOperation {
         let ssz_bytes = ssz_from_file(&input_path);
 
         OperationInput::Block(BlockOperationWrapper {
-            operation_type: self.to_block_operation_type(),
+            operation_type: BlockOperationType::from(self.clone()),
             ssz_bytes,
         })
     }
@@ -126,7 +126,7 @@ impl OperationHandler for BlockOperation {
 impl OperationHandler for EpochOperation {
     fn prepare_input(&self, _case_dir: &PathBuf) -> ream_lib::input::OperationInput {
         OperationInput::Epoch(EpochOperationWrapper {
-            operation_type: self.to_epoch_operation_type(),
+            operation_type: EpochOperationType::from(self.clone()),
         })
     }
 
@@ -167,9 +167,12 @@ impl BlockOperation {
             BlockOperation::Withdrawals => "execution_payload",
         }
     }
+}
 
-    fn to_block_operation_type(&self) -> BlockOperationType {
-        match self {
+// Convert BlockOperation to BlockOperationType using From trait
+impl From<BlockOperation> for BlockOperationType {
+    fn from(operation: BlockOperation) -> Self {
+        match operation {
             BlockOperation::Attestation => BlockOperationType::Attestation,
             BlockOperation::AttesterSlashing => BlockOperationType::AttesterSlashing,
             BlockOperation::BlockHeader => BlockOperationType::BlockHeader,
@@ -184,10 +187,10 @@ impl BlockOperation {
     }
 }
 
-// Epoch operation specific methods
-impl EpochOperation {
-    fn to_epoch_operation_type(&self) -> EpochOperationType {
-        match self {
+// Convert EpochOperation to EpochOperationType using From trait
+impl From<EpochOperation> for EpochOperationType {
+    fn from(operation: EpochOperation) -> Self {
+        match operation {
             EpochOperation::JustificationAndFinalization => {
                 EpochOperationType::JustificationAndFinalization
             }

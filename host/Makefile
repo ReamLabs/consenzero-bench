@@ -16,7 +16,7 @@ RUST_BACKTRACE = full
 .PHONY: all download run clean $(addprefix run-block-, $(BLOCK_OPERATIONS)) $(addprefix run-epoch-, $(EPOCH_OPERATIONS)) block-all epoch-all
 
 # run-block-execution_payload (not implemented) and run-block-withdrawals (incompatible with BeaconState workaround) are excluded
-all: download run-block-attestation run-block-attester_slashing run-block-block_header run-block-bls_to_execution_change run-block-deposit run-block-proposer_slashing run-block-sync_aggregate run-block-voluntary_exit
+all: download $(addprefix run-block-, $(filter-out execution_payload withdrawals, $(BLOCK_OPERATIONS))) $(addprefix run-epoch-, $(EPOCH_OPERATIONS))
 
 # Run all block processing benchmarks
 block-all: $(addprefix run-block-, $(BLOCK_OPERATIONS))

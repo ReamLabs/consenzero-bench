@@ -69,7 +69,7 @@ fn main() {
     }
 }
 
-fn run_tests<T: OperationHandler + std::fmt::Display>(
+fn run_tests<T: OperationHandler>(
     fork: &Fork,
     operation: &T,
     excluded_cases: Vec<String>,
