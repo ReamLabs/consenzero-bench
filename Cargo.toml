@@ -1,5 +1,5 @@
 [workspace]
-members = ["host", "lib", "methods"]
+members = ["host", "lib", "methods", "methods/guest"]
 resolver = "2"
 
 # Always optimize; building and running the guest takes much longer without optimization.
@@ -14,12 +14,16 @@ lto = true
 edition = "2024"
 
 [workspace.dependencies]
+ethereum_hashing = { git = "https://github.com/ReamLabs/ethereum_hashing" }
 ethereum_ssz = "0.9"
-ream-consensus = { git = "https://github.com/ReamLabs/ream.git", package = "ream-consensus", features = ["zkvm"] }
+ream-consensus = { git = "https://github.com/ReamLabs/ream.git", package = "ream-consensus-beacon", features = ["zkvm"] }
+sha2 = { git = "https://github.com/risc0/RustCrypto-hashes", tag = "sha2-v0.10.8-risczero.0" }
+ssz_types = { git = "https://github.com/ReamLabs/ssz_types", branch = "magic-extended-list" }
 tracing = "0.1"
 tree_hash = "0.10"
 tree_hash_derive = "0.10"
 
 [patch.crates-io]
 ethereum_hashing = { git = "https://github.com/ReamLabs/ethereum_hashing" }
+sha2 = { git = "https://github.com/risc0/RustCrypto-hashes", tag = "sha2-v0.10.8-risczero.0" }
 ssz_types = { git = "https://github.com/ReamLabs/ssz_types", branch = "magic-extended-list" } # Extends 2^29 to 2^40 list root

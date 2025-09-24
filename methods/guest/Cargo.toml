@@ -3,20 +3,16 @@ name = "consensus_stf"
 version = "0.1.0"
 edition = "2021"
 
-[workspace]
-
 [dependencies]
 # Risc0 dependencies
-risc0-zkvm = { version = "2.0.1", default-features = false, features = ['std'] }
+risc0-zkvm = { version = "3.0.3", default-features = false, features = ['std'] }
 
 # Ream dependencies
-ethereum_ssz = "0.9"
-ream-consensus = { git = "https://github.com/ReamLabs/ream.git", package = "ream-consensus", features = ["zkvm"] }
+ethereum_ssz = { workspace = true }
+ream-consensus = { workspace = true }
 ream-lib = { path = "../../lib" }
-tree_hash = "0.10"
-tree_hash_derive = "0.10"
-
-[patch.crates-io]
-ethereum_hashing = { git = "https://github.com/ReamLabs/ethereum_hashing" } # Add ethereum_hashing::Sha256Context that's failing tree_hash crate used by ream
-sha2 = { git = "https://github.com/risc0/RustCrypto-hashes", tag = "sha2-v0.10.8-risczero.0" }
-ssz_types = { git = "https://github.com/ReamLabs/ssz_types", branch = "magic-extended-list" } # Extends 2^29 to 2^40 list root
+tree_hash = { workspace = true }
+tree_hash_derive = { workspace = true }
+ethereum_hashing = { workspace = true }
+sha2 = { workspace = true }
+ssz_types = { workspace = true }

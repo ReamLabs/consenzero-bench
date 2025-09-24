@@ -39,14 +39,14 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: 1.85.0
+          toolchain: 1.89.0
 
       - name: Install Risc0 toolchain
         run: |
           curl -L https://risczero.com/install | bash
-          /home/runner/.risc0/bin/rzup install rust 1.85.0
-          /home/runner/.risc0/bin/rzup install r0vm 2.0.1
-          /home/runner/.risc0/bin/rzup install cargo-risczero 2.0.1
+          /home/runner/.risc0/bin/rzup install rust 1.88.0
+          /home/runner/.risc0/bin/rzup install r0vm 3.0.3
+          /home/runner/.risc0/bin/rzup install cargo-risczero 3.0.3
 
       - name: Build Risc0 guest program
         run: |
